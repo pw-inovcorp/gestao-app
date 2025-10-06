@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return auth()->check()
@@ -29,4 +30,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/home', function () {
         return Inertia::render('Home');
     })->name('home');
+});
+
+Route::middleware('role:admin')->group(function () {
+    Route::get('/utilizadores', [UserController::class, 'index'])
+        ->name('users.index');
 });

@@ -66,7 +66,7 @@
 
     const onSubmit = form.handleSubmit((values) => {
         inertiaForm.transform(() => values)
-            .put(`/utilizadores/${props.user.id}`)
+            .patch(`/utilizadores/${props.user.id}`)
     })
 </script>
 

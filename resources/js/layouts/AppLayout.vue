@@ -46,7 +46,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                         </svg>
                     </button>
-                    <h1 class="text-lg font-semibold text-slate-900 truncate">Dashboard</h1>
+<!--                    <h1 class="text-lg font-semibold text-slate-900 truncate">Dashboard</h1>-->
                 </div>
 
                 <div class="flex items-center gap-2 sm:gap-4 shrink-0">

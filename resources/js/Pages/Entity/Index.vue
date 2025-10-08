@@ -30,6 +30,15 @@ const changeFilter = (newFilter) => {
                     <h1 class="text-2xl sm:text-3xl font-bold">Entidades</h1>
                     <p class="text-slate-600 mt-1">Gerir clientes e fornecedores</p>
                 </div>
+
+                <Link href="/entidades/criar">
+                    <Button class="w-full sm:w-auto">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Nova Entidade
+                    </Button>
+                </Link>
             </div>
 
             <Card>
@@ -104,13 +113,19 @@ const changeFilter = (newFilter) => {
                                     <TableCell>{{ entity.email || '-' }}</TableCell>
                                     <TableCell>
                                         <div class="flex gap-1">
-                                            <Badge v-if="entity.is_cliente" variant="secondary">
+
+                                            <Badge v-if="entity.is_cliente && entity.is_fornecedor" variant="default">
+                                                C/F
+                                            </Badge>
+
+                                            <Badge v-else-if="entity.is_cliente" variant="default">
                                                 Cliente
                                             </Badge>
-                                            <Badge v-if="entity.is_fornecedor" variant="default">
+
+                                            <Badge v-else-if="entity.is_fornecedor" variant="default">
                                                 Fornecedor
                                             </Badge>
-                                            <span v-if="!entity.is_cliente && !entity.is_fornecedor">-</span>
+                                            <span v-else>-</span>
                                         </div>
                                     </TableCell>
                                 </TableRow>

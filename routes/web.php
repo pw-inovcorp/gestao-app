@@ -33,6 +33,10 @@ Route::middleware('auth')->group(function () {
     })->name('home');
 
     Route::get('/entidades',[EntityController::class,'index'])->name('entities.index');
+    Route::get('/entidades/criar', [EntityController::class, 'create'])->name('entities.create');
+    Route::post('/entidades', [EntityController::class, 'store'])->name('entities.store');
+
+    Route::post('/entidades/check-vies', [EntityController::class, 'checkVies'])->name('entities.checkVies');
 });
 
 Route::middleware('role:admin')->group(function () {

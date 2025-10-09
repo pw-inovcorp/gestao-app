@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EntityController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -33,6 +34,8 @@ Route::middleware('auth')->group(function () {
     })->name('home');
 
     Route::get('/entidades',[EntityController::class,'index'])->name('entities.index');
+
+    Route::get('/contactos',[ContactController::class,'index'])->name('contacts.index');
 
 });
 

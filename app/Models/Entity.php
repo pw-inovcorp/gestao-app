@@ -41,6 +41,11 @@ class Entity extends Model
         return $this->belongsTo(Country::class);
     }
 
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class);
+    }
+
 
     public static function gerarNumero(): string
     {

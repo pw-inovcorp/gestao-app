@@ -43,6 +43,15 @@ class EntityController extends Controller
         ]);
     }
 
+    public function show(Entity $entity)
+    {
+        $entity->load('country');
+
+        return Inertia::render('Entity/Show', [
+            'entity' => $entity
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

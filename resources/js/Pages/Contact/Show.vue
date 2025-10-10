@@ -7,7 +7,7 @@ import { Link, router } from '@inertiajs/vue3'
 import { ref } from 'vue'
 
 const props = defineProps({
-    entity: Object
+    contact: Object
 })
 
 const deleting = ref(false)
@@ -22,10 +22,10 @@ const formatDate = (date) => {
     })
 }
 
-const deleteEntity = () => {
-    if (confirm('Tem a certeza que deseja eliminar esta entidade?')) {
+const deleteContact = () => {
+    if (confirm('Tem a certeza que deseja eliminar este contacto?')) {
         deleting.value = true
-        router.delete(`/entidades/${props.entity.id}`, {
+        router.delete(`/contactos/${props.contact.id}`, {
             onFinish: () => {
                 deleting.value = false
             }
@@ -40,16 +40,16 @@ const deleteEntity = () => {
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-3 mb-2">
-                        <h1 class="text-2xl sm:text-3xl font-bold">{{ entity.nome }}</h1>
-                        <Badge :variant="entity.estado === 'ativo' ? 'default' : 'destructive'">
-                            {{ entity.estado }}
+                        <h1 class="text-2xl sm:text-3xl font-bold">{{ contact.nome }} {{ contact.apelido }}</h1>
+                        <Badge :variant="contact.estado === 'ativo' ? 'default' : 'destructive'">
+                            {{ contact.estado }}
                         </Badge>
                     </div>
-                    <p class="text-slate-600">Detalhes da entidade</p>
+                    <p class="text-slate-600">Detalhes do contacto</p>
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    <Link href="/entidades">
+                    <Link href="/contactos">
                         <Button variant="outline" size="sm">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -58,7 +58,7 @@ const deleteEntity = () => {
                         </Button>
                     </Link>
 
-                    <Link :href="`/entidades/${entity.id}/editar`">
+                    <Link :href="`/contactos/${contact.id}/editar`">
                         <Button size="sm">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
@@ -70,7 +70,7 @@ const deleteEntity = () => {
                     <Button
                         variant="destructive"
                         size="sm"
-                        @click="deleteEntity"
+                        @click="deleteContact"
                         :disabled="deleting"
                     >
                         <svg v-if="!deleting" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,7 +87,7 @@ const deleteEntity = () => {
 
 
             <div class="space-y-6">
-                <div class="grid gap-6 md:grid-cols-3">
+                <div class="grid gap-6 md:grid-cols-2">
 
                     <Card>
                         <CardHeader class="pb-3">
@@ -101,75 +101,34 @@ const deleteEntity = () => {
                         <CardContent class="space-y-3 pt-0">
                             <div>
                                 <label class="label">Número</label>
-                                <p class="font-medium">{{ entity.numero }}</p>
+                                <p class="font-medium">{{ contact.numero }}</p>
                             </div>
 
                             <div>
-                                <label class="label">NIF</label>
-                                <p class="font-medium">{{ entity.nif }}</p>
+                                <label class="label">Nome Completo</label>
+                                <p class="font-medium">{{ contact.nome }} {{ contact.apelido }}</p>
                             </div>
 
                             <div>
-                                <label class="label">Nome</label>
-                                <p>{{ entity.nome }}</p>
+                                <label class="label">Função</label>
+                                <p>{{ contact.contact_function?.nome || '-' }}</p>
                             </div>
 
                             <div>
-                                <label class="label">Tipo de Entidade</label>
-                                <div class="flex gap-2 mt-1">
-                                    <Badge v-if="entity.is_cliente" variant="default">
-                                        Cliente
-                                    </Badge>
-                                    <Badge v-if="entity.is_fornecedor" variant="secondary">
-                                        Fornecedor
-                                    </Badge>
-                                </div>
+                                <label class="label">Entidade</label>
+                                <p class="font-medium">{{ contact.entity?.nome || '-' }}</p>
                             </div>
 
                             <div>
                                 <label class="label">Estado</label>
                                 <div class="mt-1">
-                                    <Badge :variant="entity.estado === 'ativo' ? 'default' : 'destructive'">
-                                        {{ entity.estado }}
+                                    <Badge :variant="contact.estado === 'ativo' ? 'default' : 'destructive'">
+                                        {{ contact.estado }}
                                     </Badge>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
-
-                    <Card>
-                        <CardHeader class="pb-3">
-                            <div class="flex items-center gap-2">
-                                <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                                </svg>
-                                <CardTitle class="text-lg">Morada</CardTitle>
-                            </div>
-                        </CardHeader>
-                        <CardContent class="space-y-3 pt-0">
-                            <div>
-                                <label class="label">Endereço</label>
-                                <p>{{ entity.morada || '-' }}</p>
-                            </div>
-
-                            <div>
-                                <label class="label">Código Postal</label>
-                                <p>{{ entity.codigo_postal || '-' }}</p>
-                            </div>
-
-                            <div>
-                                <label class="label">Localidade</label>
-                                <p>{{ entity.localidade || '-' }}</p>
-                            </div>
-
-                            <div>
-                                <label class="label">País</label>
-                                <p>{{ entity.country?.nome || '-' }}</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-
 
                     <Card>
                         <CardHeader class="pb-3">
@@ -184,8 +143,8 @@ const deleteEntity = () => {
                             <div>
                                 <label class="label">Email</label>
                                 <p>
-                                    <a v-if="entity.email" :href="`mailto:${entity.email}`" class="text-blue-600 hover:underline break-all">
-                                        {{ entity.email }}
+                                    <a v-if="contact.email" :href="`mailto:${contact.email}`" class="text-blue-600 hover:underline break-all">
+                                        {{ contact.email }}
                                     </a>
                                     <span v-else>-</span>
                                 </p>
@@ -194,8 +153,8 @@ const deleteEntity = () => {
                             <div>
                                 <label class="label">Telefone</label>
                                 <p>
-                                    <a v-if="entity.telefone" :href="`tel:${entity.telefone}`" class="text-blue-600 hover:underline">
-                                        {{ entity.telefone }}
+                                    <a v-if="contact.telefone" :href="`tel:${contact.telefone}`" class="text-blue-600 hover:underline">
+                                        {{ contact.telefone }}
                                     </a>
                                     <span v-else>-</span>
                                 </p>
@@ -204,18 +163,8 @@ const deleteEntity = () => {
                             <div>
                                 <label class="label">Telemóvel</label>
                                 <p>
-                                    <a v-if="entity.telemovel" :href="`tel:${entity.telemovel}`" class="text-blue-600 hover:underline">
-                                        {{ entity.telemovel }}
-                                    </a>
-                                    <span v-else>-</span>
-                                </p>
-                            </div>
-
-                            <div>
-                                <label class="label">Website</label>
-                                <p>
-                                    <a v-if="entity.website" :href="entity.website" target="_blank" class="text-blue-600 hover:underline break-all">
-                                        {{ entity.website }}
+                                    <a v-if="contact.telemovel" :href="`tel:${contact.telemovel}`" class="text-blue-600 hover:underline">
+                                        {{ contact.telemovel }}
                                     </a>
                                     <span v-else>-</span>
                                 </p>
@@ -224,8 +173,8 @@ const deleteEntity = () => {
                     </Card>
                 </div>
 
-
                 <div class="grid gap-6 md:grid-cols-2">
+
                     <Card class="overflow-hidden">
                         <CardHeader class="pb-3">
                             <div class="flex items-center gap-2">
@@ -236,7 +185,9 @@ const deleteEntity = () => {
                             </div>
                         </CardHeader>
                         <CardContent class="pt-0 overflow-hidden">
-                            <p class="text-sm text-slate-700 break-words break-all overflow-wrap-anywhere">{{ entity.observacoes || 'Sem observações registadas.' }}</p>
+                            <p class="text-sm text-slate-700 break-words break-all overflow-wrap-anywhere">
+                                {{ contact.observacoes || 'Sem observações registadas.' }}
+                            </p>
                         </CardContent>
                     </Card>
 
@@ -244,7 +195,7 @@ const deleteEntity = () => {
                         <CardHeader class="pb-3">
                             <div class="flex items-center gap-2">
                                 <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                 </svg>
                                 <CardTitle class="text-lg">Definições</CardTitle>
@@ -254,20 +205,20 @@ const deleteEntity = () => {
                             <div>
                                 <label class="label">Consentimento RGPD</label>
                                 <div class="mt-1">
-                                    <Badge :variant="entity.consentimento_rgpd ? 'default' : 'secondary'">
-                                        {{ entity.consentimento_rgpd ? 'Sim' : 'Não' }}
+                                    <Badge :variant="contact.consentimento_rgpd ? 'default' : 'secondary'">
+                                        {{ contact.consentimento_rgpd ? 'Sim' : 'Não' }}
                                     </Badge>
                                 </div>
                             </div>
 
                             <div>
                                 <label class="label">Criado em</label>
-                                <p class="text-sm text-slate-600">{{ formatDate(entity.created_at) }}</p>
+                                <p class="text-sm text-slate-600">{{ formatDate(contact.created_at) }}</p>
                             </div>
 
                             <div>
                                 <label class="label">Atualizado em</label>
-                                <p class="text-sm text-slate-600">{{ formatDate(entity.updated_at) }}</p>
+                                <p class="text-sm text-slate-600">{{ formatDate(contact.updated_at) }}</p>
                             </div>
                         </CardContent>
                     </Card>

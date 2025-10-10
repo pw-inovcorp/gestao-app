@@ -55,4 +55,11 @@ Route::middleware('role:admin')->group(function () {
     Route::delete('/entidades/{entity}', [EntityController::class, 'destroy'])->name('entities.destroy');
 
     Route::post('/entidades/check-vies', [EntityController::class, 'checkVies'])->name('entities.checkVies');
+
+    Route::get('/contactos/criar', [ContactController::class, 'create'])->name('contacts.create');
+    Route::post('/contactos', [ContactController::class, 'store'])->name('contacts.store');
+    Route::get('/contactos/{contact}', [ContactController::class, 'show'])->name('contacts.show');
+    Route::get('/contactos/{contact}/editar', [ContactController::class, 'edit'])->name('contacts.edit');
+    Route::patch('/contactos/{contact}', [ContactController::class, 'update'])->name('contacts.update');
+    Route::delete('/contactos/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
 });

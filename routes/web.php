@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EntityController;
 use Illuminate\Support\Facades\Route;
@@ -36,6 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/entidades',[EntityController::class,'index'])->name('entities.index');
 
     Route::get('/contactos',[ContactController::class,'index'])->name('contacts.index');
+
+    Route::get('/artigos',[ArticleController::class,'index'])->name('articles.index');
 
 });
 

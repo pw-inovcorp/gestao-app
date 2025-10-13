@@ -75,4 +75,9 @@ Route::middleware('role:admin')->group(function () {
     Route::delete('/artigos/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 
     Route::get('/propostas', [ProposalController::class, 'index'])->name('proposals.index');
+    Route::get('propostas/criar', [ProposalController::class, 'create'])->name('proposals.create');
+    Route::post('propostas', [ProposalController::class, 'store'])->name('proposals.store');
+    Route::get('propostas/{proposal}/editar', [ProposalController::class, 'edit'])->name('proposals.edit');
+    Route::patch('propostas/{proposal}', [ProposalController::class, 'update'])->name('proposals.update');
+    Route::delete('propostas/{proposal}', [ProposalController::class, 'destroy'])->name('proposals.destroy');
 });

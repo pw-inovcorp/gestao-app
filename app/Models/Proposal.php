@@ -37,6 +37,12 @@ class Proposal extends Model
         return $this->hasMany(ProposalItem::class);
     }
 
+    public function calculateTotalValue()
+    {
+        $this->valor_total = $this->items()->sum('subtotal');
+        $this->save();
+    }
+
 
     public static function gerarNumero(): string
     {

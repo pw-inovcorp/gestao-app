@@ -33,6 +33,15 @@ class ArticleController extends Controller
         ]);
     }
 
+    public function show(Article $article)
+    {
+        $article->load('ivaRate');
+
+        return Inertia::render('Article/Show', [
+            'article' => $article
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

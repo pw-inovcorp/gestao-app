@@ -68,6 +68,7 @@ Route::middleware('role:admin')->group(function () {
 
     Route::get('/artigos/criar', [ArticleController::class, 'create'])->name('articles.create');
     Route::post('/artigos', [ArticleController::class, 'store'])->name('articles.store');
+    Route::get('/artigos/{article}', [ArticleController::class, 'show'])->name('article.show');
     Route::get('/artigos/{article}/editar', [ArticleController::class, 'edit'])->name('articles.edit');
     Route::patch('/artigos/{article}', [ArticleController::class, 'update'])->name('articles.update');
     Route::delete('/artigos/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');

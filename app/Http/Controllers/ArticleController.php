@@ -15,7 +15,7 @@ class ArticleController extends Controller
     public function index(Request $request)
     {
         $articles = Article::with('ivaRate')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('articles.referencia', 'asc')
             ->paginate(10);
 
         return Inertia::render('Article/Index', [

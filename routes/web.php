@@ -3,6 +3,7 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EntityController;
+use App\Http\Controllers\ProposalController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\UserController;
@@ -72,4 +73,6 @@ Route::middleware('role:admin')->group(function () {
     Route::get('/artigos/{article}/editar', [ArticleController::class, 'edit'])->name('articles.edit');
     Route::patch('/artigos/{article}', [ArticleController::class, 'update'])->name('articles.update');
     Route::delete('/artigos/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+
+    Route::get('/propostas', [ProposalController::class, 'index'])->name('proposals.index');
 });

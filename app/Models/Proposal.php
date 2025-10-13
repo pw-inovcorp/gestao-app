@@ -27,9 +27,9 @@ class Proposal extends Model
     ];
 
 
-    public function entity()
+    public function client()
     {
-        return $this->belongsTo(Entity::class);
+        return $this->belongsTo(Entity::class, 'cliente_id');
     }
 
     public function items()
@@ -53,9 +53,18 @@ class Proposal extends Model
                 $proposal->numero = self::gerarNumero();
             }
 
+            if ($proposal->estado === 'fechado' && empty($proposal->data_proposta)) {
+                $proposal->data_proposta = Carbon::now();
+            }
 
-            if (empty($proposal->validade)) {
-                $proposal->validade = Carbon::now()->addDays(30);
+            if (empty($proposal->validade) && $proposal->data_proposta) {
+                $proposal->validade = Carbon::parse($proposal->data_proposta)->addDays(30);
+            }
+        });
+
+        static::updating(function ($proposal) {
+            if ($proposal->estado === 'fechado' && empty($proposal->data_proposta)) {
+                $proposal->data_proposta = Carbon::now();
             }
         });
     }

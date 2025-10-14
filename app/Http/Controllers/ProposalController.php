@@ -9,6 +9,7 @@ use App\Models\ProposalItem;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProposalController extends Controller
 {
@@ -46,6 +47,15 @@ class ProposalController extends Controller
             'clients' => $clients,
             'articles' => $articles,
             'suppliers' => $suppliers
+        ]);
+    }
+
+    public function show(Proposal $proposal)
+    {
+        $proposal->load(['client', 'items.article.ivaRate', 'items.supplier']);
+
+        return Inertia::render('Proposal/Show', [
+            'proposal' => $proposal
         ]);
     }
 
@@ -194,6 +204,37 @@ class ProposalController extends Controller
 
         return redirect()->route('proposals.index')
             ->with('success', "Proposta {$numero} eliminada com sucesso!");
+    }
+
+    public function downloadPdf($id)
+    {
+        $proposal = Proposal::with([
+            'client',
+            'items.article.ivaRate',
+            'items.supplier'
+        ])->findOrFail($id);
+
+
+        $totalWithoutIva = $proposal->items->sum('subtotal');
+
+        $totalIva = $proposal->items->sum(function ($item) {
+            return $item->subtotal * (($item->article->ivaRate->taxa ?? 0) / 100);
+        });
+
+        $totalWithIva = $totalWithoutIva + $totalIva;
+
+
+        $pdf = Pdf::loadView('proposal/pdf', [
+            'proposal' => $proposal,
+            'totalWithoutIva' => $totalWithoutIva,
+            'totalIva' => $totalIva,
+            'totalWithIva' => $totalWithIva,
+        ]);
+
+
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download("proposta-{$proposal->numero}.pdf");
     }
 
 

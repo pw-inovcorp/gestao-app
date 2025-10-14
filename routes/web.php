@@ -76,8 +76,11 @@ Route::middleware('role:admin')->group(function () {
 
     Route::get('/propostas', [ProposalController::class, 'index'])->name('proposals.index');
     Route::get('propostas/criar', [ProposalController::class, 'create'])->name('proposals.create');
+    Route::get('propostas/{proposal}', [ProposalController::class, 'show'])->name('proposals.show');
     Route::post('propostas', [ProposalController::class, 'store'])->name('proposals.store');
     Route::get('propostas/{proposal}/editar', [ProposalController::class, 'edit'])->name('proposals.edit');
     Route::patch('propostas/{proposal}', [ProposalController::class, 'update'])->name('proposals.update');
     Route::delete('propostas/{proposal}', [ProposalController::class, 'destroy'])->name('proposals.destroy');
+
+    Route::get('/propostas/{id}/pdf', [ProposalController::class, 'downloadPdf'])->name('proposal.pdf');
 });

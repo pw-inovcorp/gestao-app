@@ -73,7 +73,9 @@ const onSubmit = veeForm.handleSubmit((values) => {
             preco_custo: item.preco_custo
         }))
     })).patch(`/propostas/${props.proposal.id}`, {
-        onError: (errors) => console.error('Erros:', errors)
+        onError: (errors) => {
+            alert('Erros no formulário:\n' + 'O preço unitário não pode ser nulo')
+        }
     })
 })
 </script>

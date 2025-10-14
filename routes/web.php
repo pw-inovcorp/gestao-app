@@ -87,4 +87,6 @@ Route::middleware('role:admin')->group(function () {
     Route::post('/propostas/{id}/converter-encomenda', [ProposalController::class, 'convertToOrder'])->name('proposals.convertToOrder');
 
     Route::get('/encomendas', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/encomendas/criar', [OrderController::class, 'create'])->name('orders.create');
+    Route::post('/encomendas', [OrderController::class, 'store'])->name('orders.store');
 });

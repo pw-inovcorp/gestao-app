@@ -237,5 +237,45 @@ class ProposalController extends Controller
         return $pdf->download("proposta-{$proposal->numero}.pdf");
     }
 
+    public function convertToOrder($id)
+    {
+        $proposal = Proposal::with(['client', 'items.article', 'items.supplier'])
+            ->findOrFail($id);
+
+        if ($proposal->estado !== 'fechado') {
+            return back()->with('error', 'Apenas propostas fechadas podem ser convertidas em encomendas.');
+        }
+
+        if (\App\Models\Order::where('proposal_id', $proposal->id)->exists()) {
+            return back()->with('error', 'Esta proposta já foi convertida em encomenda.');
+        }
+
+
+        $order = \App\Models\Order::create([
+            'cliente_id' => $proposal->cliente_id,
+            'valor_total' => $proposal->valor_total,
+            'estado' => 'rascunho',
+            'proposal_id' => $proposal->id,
+        ]);
+
+
+        foreach ($proposal->items as $proposalItem) {
+            \App\Models\OrderItem::create([
+                'order_id' => $order->id,
+                'article_id' => $proposalItem->article_id,
+                'fornecedor_id' => $proposalItem->fornecedor_id,
+                'quantidade' => $proposalItem->quantidade,
+                'preco_unitario' => $proposalItem->preco_unitario,
+                'preco_custo' => $proposalItem->preco_custo,
+            ]);
+        }
+
+
+        $order->calculateTotalValue();
+
+        return redirect()->route('orders.index')
+            ->with('success', "Proposta {$proposal->numero} convertida em encomenda {$order->numero} com sucesso!");
+    }
+
 
 }

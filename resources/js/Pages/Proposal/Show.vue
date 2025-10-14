@@ -13,6 +13,7 @@ const props = defineProps({
 
 const deleting = ref(false)
 
+
 const formatPrice = (price) => {
     return new Intl.NumberFormat('pt-PT', {
         style: 'currency',
@@ -57,13 +58,18 @@ const totalWithIva = computed(() => {
 
 const canEdit = computed(() => props.proposal.estado === 'rascunho')
 const canDelete = computed(() => props.proposal.estado === 'rascunho')
-//const canConvertToOrder = computed(() => props.proposal.estado === 'fechado')
+const canConvertToOrder = computed(() => props.proposal.estado === 'fechado')
 
 const downloadPDF = () => {
     window.open(`/propostas/${props.proposal.id}/pdf`, '_blank')
 }
 
-// const convertToOrder
+const convertToOrder = () => {
+    if (confirm(`Tem a certeza que deseja converter a proposta ${props.proposal.numero} em encomenda?`)) {
+
+        router.post(`/propostas/${props.proposal.id}/converter-encomenda`, {})
+    }
+}
 
 const deleteProposal = () => {
     if (confirm(`Tem a certeza que deseja eliminar a proposta ${props.proposal.numero}?`)) {
@@ -80,7 +86,6 @@ const deleteProposal = () => {
 <template>
     <AppLayout>
         <div class="max-w-7xl mx-auto space-y-6">
-            <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-3 mb-2">
@@ -104,13 +109,26 @@ const deleteProposal = () => {
 
                     <Button variant="outline" size="sm" @click="downloadPDF">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M9 12l3 3m0 0 3-3m-3 3V2.25" />
                         </svg>
-                        Download PDF
+                        Baixar PDF
+                    </Button>
+
+                    <Button
+                        v-if="canConvertToOrder"
+                        variant="outline"
+                        size="sm"
+                        @click="convertToOrder"
+                        class="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                    >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 0 1 9 9v.375M10.125 2.25A3.375 3.375 0 0 1 13.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 0 1 3.375 3.375M9 15l2.25 2.25L15 12" />
+                        </svg>
+                        Converter em Encomenda
                     </Button>
 
 
-                    <!-- Edit Button (only for draft proposals) -->
+
                     <Link v-if="canEdit" :href="`/propostas/${proposal.id}/editar`">
                         <Button size="sm">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

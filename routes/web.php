@@ -3,6 +3,7 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EntityController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProposalController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -83,4 +84,7 @@ Route::middleware('role:admin')->group(function () {
     Route::delete('propostas/{proposal}', [ProposalController::class, 'destroy'])->name('proposals.destroy');
 
     Route::get('/propostas/{id}/pdf', [ProposalController::class, 'downloadPdf'])->name('proposal.pdf');
+    Route::post('/propostas/{id}/converter-encomenda', [ProposalController::class, 'convertToOrder'])->name('proposals.convertToOrder');
+
+    Route::get('/encomendas', [OrderController::class, 'index'])->name('orders.index');
 });

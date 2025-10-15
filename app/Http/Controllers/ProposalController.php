@@ -106,7 +106,7 @@ class ProposalController extends Controller
 
     public function edit(Proposal $proposal)
     {
-        // Só permite editar propostas em rascunho
+
         if ($proposal->estado !== 'rascunho') {
             return redirect()->route('proposals.index')
                 ->with('error', 'Apenas propostas em rascunho podem ser editadas.');

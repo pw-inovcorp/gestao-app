@@ -28,6 +28,7 @@ class OrderController extends Controller
 
     public function create()
     {
+
         $clients = Entity::where('is_cliente', true)
             ->where('estado', 'ativo')
             ->orderBy('nome')
@@ -89,4 +90,84 @@ class OrderController extends Controller
         return redirect()->route('orders.index')
             ->with('success', 'Encomenda criada com sucesso');
     }
+
+    public function edit(Order $order)
+    {
+
+        if ($order->estado !== 'rascunho') {
+            return redirect()->route('orders.index')
+                ->with('error', 'Apenas encomendas em rascunho podem ser editadas.');
+        }
+
+        $order->load(['items.article.ivaRate', 'items.supplier']);
+
+        $clients = Entity::where('is_cliente', true)
+            ->where('estado', 'ativo')
+            ->orderBy('nome')
+            ->get(['id', 'nome', 'nif']);
+
+        $articles = Article::where('estado', 'ativo')
+            ->with('ivaRate')
+            ->orderBy('nome')
+            ->get();
+
+        $suppliers = Entity::where('is_fornecedor', true)
+            ->where('estado', 'ativo')
+            ->orderBy('nome')
+            ->get(['id', 'nome', 'nif']);
+
+        return Inertia::render('Order/Create', [
+            'order' => $order,
+            'clients' => $clients,
+            'articles' => $articles,
+            'suppliers' => $suppliers
+        ]);
+    }
+
+    // Update
+    public function update(Request $request, Order $order)
+    {
+
+        if ($order->estado !== 'rascunho') {
+            return redirect()->route('orders.index')
+                ->with('error', 'Apenas encomendas em rascunho podem ser editadas.');
+        }
+
+        $validated = $request->validate([
+            'cliente_id' => ['required', 'exists:entities,id'],
+            'estado' => ['required', Rule::in(['rascunho', 'fechado'])],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.article_id' => ['required', 'exists:articles,id'],
+            'items.*.fornecedor_id' => ['nullable', 'exists:entities,id'],
+            'items.*.quantidade' => ['required', 'integer', 'min:1'],
+            'items.*.preco_unitario' => ['required', 'numeric', 'min:0'],
+            'items.*.preco_custo' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
+        $order->update([
+            'cliente_id' => $validated['cliente_id'],
+            'estado' => $validated['estado'],
+        ]);
+
+
+        $order->items()->delete();
+
+        foreach ($validated['items'] as $item) {
+            OrderItem::create([
+                'order_id' => $order->id,
+                'article_id' => $item['article_id'],
+                'fornecedor_id' => $item['fornecedor_id'] ?? null,
+                'quantidade' => $item['quantidade'],
+                'preco_unitario' => $item['preco_unitario'],
+                'preco_custo' => $item['preco_custo'] ?? null,
+            ]);
+        }
+
+        $order->calculateTotalValue();
+
+        return redirect()->route('orders.index')
+            ->with('success', 'Encomenda atualizada com sucesso');
+    }
+
+
 }

@@ -59,7 +59,7 @@ const deleteEntity = (entityId) => {
                     <div class="flex flex-col gap-4">
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                             <div>
-                                <CardTitle>Lista de Entidades</CardTitle>
+                                <CardTitle class="mb-1.5">Lista de Entidades</CardTitle>
                                 <CardDescription>Total: {{ entities.total }} entidades</CardDescription>
                             </div>
 

@@ -10,9 +10,7 @@ const emit = defineEmits(['close'])
 
 const page = usePage()
 
-const isActive = (route) => {
-    return page.url.startsWith(route)
-}
+const isActive = (route) => page.url === route
 
 
 const isAdmin = computed(() => {
@@ -57,6 +55,13 @@ const menuItems = computed(() => {
         },
 
         {
+            name:'Encomendas-Fornecedores',
+            route:'/encomendas-fornecedor',
+            icon:"m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9",
+            permission: "admin"
+        },
+
+        {
             name: 'Utilizadores',
             route: '/utilizadores',
             icon: "M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z",
@@ -84,7 +89,7 @@ const menuItems = computed(() => {
 
 <template>
     <aside :class="[
-        'fixed lg:sticky lg:top-0 inset-y-0 left-0 z-50 w-64 h-screen bg-slate-900',
+        'fixed lg:sticky lg:top-0 inset-y-0 left-0 z-50  h-screen bg-slate-900',
         'transition-transform',
         open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
     ]">

@@ -8,8 +8,11 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Proposal;
 use App\Models\ProposalItem;
+use App\Models\SupplierOrder;
+use App\Models\SupplierOrderItem;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -220,6 +223,58 @@ class OrderController extends Controller
         $pdf->setPaper('A4', 'portrait');
 
         return $pdf->download("encomenda-{$order->numero}.pdf");
+    }
+
+    public function convertToSupplierOrders(Order $order)
+    {
+        if ($order->estado !== 'fechado') {
+            return back()->with('error', 'Apenas encomendas fechadas podem ser convertidas.');
+        }
+
+        if (SupplierOrder::where('order_id', $order->id)->exists()) {
+            return back()->with('error', 'Esta encomenda já foi convertida em encomendas de fornecedor.');
+        }
+
+        $itemsComFornecedor = $order->items()
+            ->whereNotNull('fornecedor_id')
+            ->with(['article', 'supplier'])
+            ->get();
+
+        if ($itemsComFornecedor->isEmpty()) {
+            return back()->with('info', 'Nenhum artigo desta encomenda requer fornecedor.');
+        }
+
+        $itemsBySupplier = $itemsComFornecedor->groupBy('fornecedor_id');
+        $encomendasCriadas = 0;
+
+        DB::transaction(function () use ($order, $itemsBySupplier, &$encomendasCriadas) {
+            foreach ($itemsBySupplier as $fornecedorId => $items) {
+                $supplierOrder = SupplierOrder::create([
+                    'fornecedor_id' => $fornecedorId,
+                    'order_id' => $order->id,
+                    'estado' => 'rascunho',
+                ]);
+
+                foreach ($items as $item) {
+                    SupplierOrderItem::create([
+                        'supplier_order_id' => $supplierOrder->id,
+                        'article_id' => $item->article_id,
+                        'quantidade' => $item->quantidade,
+                        'preco_unitario' => $item->preco_custo ?? $item->preco_unitario,
+                    ]);
+                }
+
+                $supplierOrder->calculateTotalValue();
+                $encomendasCriadas++;
+            }
+        });
+
+        $fornecedores = $itemsBySupplier->count();
+        $message = $fornecedores === 1
+            ? "1 encomenda de fornecedor criada com sucesso!"
+            : "{$fornecedores} encomendas de fornecedor criadas com sucesso!";
+
+        return redirect()->route('supplier-orders.index')->with('success', $message);
     }
 
 

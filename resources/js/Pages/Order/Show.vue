@@ -1,11 +1,11 @@
 <script setup>
 import AppLayout from '@/layouts/AppLayout.vue'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Link, router } from '@inertiajs/vue3'
-import { ref, computed } from 'vue'
+import {Button} from '@/components/ui/button'
+import {Badge} from '@/components/ui/badge'
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card'
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table'
+import {Link, router} from '@inertiajs/vue3'
+import {computed, ref} from 'vue'
 
 const props = defineProps({
     order: Object
@@ -58,6 +58,12 @@ const totalWithIva = computed(() => {
 const canEdit = computed(() => props.order.estado === 'rascunho')
 const canDelete = computed(() => props.order.estado === 'rascunho')
 
+const canConvert = computed(() => {
+    if (props.order.estado !== 'fechado') return false
+
+    return props.order.items?.some(item => item.fornecedor_id)
+})
+
 const downloadPDF = () => {
     window.open(`/encomendas/${props.order.id}/pdf`, '_blank')
 }
@@ -71,6 +77,12 @@ const deleteOrder = () => {
                 deleting.value = false
             }
         })
+    }
+}
+
+const convertToSupplierOrders = () => {
+    if (confirm('Deseja criar encomendas de fornecedor a partir desta encomenda?')) {
+        router.post(`/encomendas/${props.order.id}/converter-fornecedor`)
     }
 }
 </script>
@@ -111,6 +123,18 @@ const deleteOrder = () => {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M9 12l3 3m0 0 3-3m-3 3V2.25" />
                         </svg>
                         Baixar PDF
+                    </Button>
+
+                    <Button
+                        v-if="canConvert"
+                        variant="default"
+                        size="sm"
+                        @click="convertToSupplierOrders"
+                    >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                        Converter p/ Fornecedor
                     </Button>
 
                     <Link v-if="canEdit" :href="`/encomendas/${order.id}/editar`">

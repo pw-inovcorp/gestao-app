@@ -41,6 +41,11 @@ class Order extends Model
         return $this->belongsTo(Proposal::class);
     }
 
+    public function supplierOrders()
+    {
+        return $this->hasMany(SupplierOrder::class);
+    }
+
     // Helper methods
     public function calculateTotalValue()
     {

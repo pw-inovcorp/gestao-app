@@ -5,6 +5,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EntityController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProposalController;
+use App\Http\Controllers\SupplierOrderController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\UserController;
@@ -95,4 +96,7 @@ Route::middleware('role:admin')->group(function () {
     Route::delete('/encomendas/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
 
     Route::get('/encomendas/{order}/pdf', [OrderController::class, 'downloadPdf'])->name('orders.pdf');
+    Route::post('/encomendas/{order}/converter-fornecedor', [OrderController::class, 'convertToSupplierOrders'])->name('orders.convertToSupplierOrders');
+
+    Route::get('/encomendas-fornecedor', [SupplierOrderController::class, 'index'])->name('supplier-orders.index');
 });

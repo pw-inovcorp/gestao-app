@@ -8,11 +8,10 @@ import { Link, router } from '@inertiajs/vue3'
 import { ref, computed } from 'vue'
 
 const props = defineProps({
-    proposal: Object
+    order: Object
 })
 
 const deleting = ref(false)
-
 
 const formatPrice = (price) => {
     return new Intl.NumberFormat('pt-PT', {
@@ -41,12 +40,12 @@ const formatDateTime = (date) => {
 }
 
 const totalWithoutIva = computed(() => {
-    return props.proposal.items?.reduce((sum, item) => sum + parseFloat(item.subtotal), 0) || 0
+    return props.order.items?.reduce((sum, item) => sum + parseFloat(item.subtotal), 0) || 0
 })
 
 const totalIva = computed(() => {
     let sum = 0
-    for (const item of props.proposal.items || []) {
+    for (const item of props.order.items || []) {
         sum += item.subtotal * ((item.article?.iva_rate?.taxa ?? 0) / 100)
     }
     return sum
@@ -56,25 +55,18 @@ const totalWithIva = computed(() => {
     return totalWithoutIva.value + totalIva.value
 })
 
-const canEdit = computed(() => props.proposal.estado === 'rascunho')
-const canDelete = computed(() => props.proposal.estado === 'rascunho')
-const canConvertToOrder = computed(() => props.proposal.estado === 'fechado')
+const canEdit = computed(() => props.order.estado === 'rascunho')
+const canDelete = computed(() => props.order.estado === 'rascunho')
 
 const downloadPDF = () => {
-    window.open(`/propostas/${props.proposal.id}/pdf`, '_blank')
+    window.open(`/encomendas/${props.order.id}/pdf`, '_blank')
 }
 
-const convertToOrder = () => {
-    if (confirm(`Tem a certeza que deseja converter a proposta ${props.proposal.numero} em encomenda?`)) {
 
-        router.post(`/propostas/${props.proposal.id}/converter-encomenda`, {})
-    }
-}
-
-const deleteProposal = () => {
-    if (confirm(`Tem a certeza que deseja eliminar a proposta ${props.proposal.numero}?`)) {
+const deleteOrder = () => {
+    if (confirm(`Tem a certeza que deseja eliminar a encomenda ${props.order.numero}?`)) {
         deleting.value = true
-        router.delete(`/propostas/${props.proposal.id}`, {
+        router.delete(`/encomendas/${props.order.id}`, {
             onFinish: () => {
                 deleting.value = false
             }
@@ -86,19 +78,26 @@ const deleteProposal = () => {
 <template>
     <AppLayout>
         <div class="max-w-7xl mx-auto space-y-6">
+            <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-3 mb-2">
-                        <h1 class="text-2xl sm:text-3xl font-bold">{{ proposal.numero }}</h1>
-                        <Badge :variant="proposal.estado === 'fechado' ? 'default' : 'secondary'">
-                            {{ proposal.estado }}
+                        <h1 class="text-2xl sm:text-3xl font-bold">{{ order.numero }}</h1>
+                        <Badge :variant="order.estado === 'fechado' ? 'default' : 'secondary'">
+                            {{ order.estado }}
                         </Badge>
                     </div>
-                    <p class="text-slate-600">Proposta para {{ proposal.client?.nome }}</p>
+                    <p class="text-slate-600">Encomenda para {{ order.client?.nome }}</p>
+                    <p v-if="order.proposal" class="text-sm text-slate-500 mt-1">
+                        Convertida da proposta
+                        <Link :href="`/propostas/${order.proposal.id}`" class="text-blue-600 hover:underline">
+                            {{ order.proposal.numero }}
+                        </Link>
+                    </p>
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    <Link href="/propostas">
+                    <Link href="/encomendas">
                         <Button variant="outline" size="sm">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -114,22 +113,7 @@ const deleteProposal = () => {
                         Baixar PDF
                     </Button>
 
-                    <Button
-                        v-if="canConvertToOrder"
-                        variant="outline"
-                        size="sm"
-                        @click="convertToOrder"
-                        class="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
-                    >
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 0 1 9 9v.375M10.125 2.25A3.375 3.375 0 0 1 13.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 0 1 3.375 3.375M9 15l2.25 2.25L15 12" />
-                        </svg>
-                        Converter em Encomenda
-                    </Button>
-
-
-
-                    <Link v-if="canEdit" :href="`/propostas/${proposal.id}/editar`">
+                    <Link v-if="canEdit" :href="`/encomendas/${order.id}/editar`">
                         <Button size="sm">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
@@ -142,7 +126,7 @@ const deleteProposal = () => {
                         v-if="canDelete"
                         variant="destructive"
                         size="sm"
-                        @click="deleteProposal"
+                        @click="deleteOrder"
                         :disabled="deleting"
                     >
                         <svg v-if="!deleting" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,17 +153,17 @@ const deleteProposal = () => {
                     </CardHeader>
                     <CardContent class="space-y-3">
                         <div>
-                            <p class="font-medium text-lg">{{ proposal.client?.nome }}</p>
-                            <p class="text-sm text-slate-500">NIF: {{ proposal.client?.nif }}</p>
+                            <p class="font-medium text-lg">{{ order.client?.nome }}</p>
+                            <p class="text-sm text-slate-500">NIF: {{ order.client?.nif }}</p>
                         </div>
-                        <div v-if="proposal.client?.email" class="text-sm">
-                            <a :href="`mailto:${proposal.client.email}`" class="text-blue-600 hover:underline">
-                                {{ proposal.client.email }}
+                        <div v-if="order.client?.email" class="text-sm">
+                            <a :href="`mailto:${order.client.email}`" class="text-blue-600 hover:underline">
+                                {{ order.client.email }}
                             </a>
                         </div>
-                        <div v-if="proposal.client?.telemovel" class="text-sm">
-                            <a :href="`tel:${proposal.client.telemovel}`" class="text-blue-600 hover:underline">
-                                {{ proposal.client.telemovel }}
+                        <div v-if="order.client?.telemovel" class="text-sm">
+                            <a :href="`tel:${order.client.telemovel}`" class="text-blue-600 hover:underline">
+                                {{ order.client.telemovel }}
                             </a>
                         </div>
                     </CardContent>
@@ -196,12 +180,12 @@ const deleteProposal = () => {
                     </CardHeader>
                     <CardContent class="space-y-3">
                         <div>
-                            <label class="label">Data da Proposta</label>
-                            <p class="font-medium">{{ formatDate(proposal.data_proposta) }}</p>
+                            <label class="label">Data da Encomenda</label>
+                            <p class="font-medium">{{ formatDate(order.data_encomenda) }}</p>
                         </div>
                         <div>
-                            <label class="label">Validade</label>
-                            <p class="font-medium">{{ formatDate(proposal.validade) }}</p>
+                            <label class="label">Criada em</label>
+                            <p class="text-sm text-slate-600">{{ formatDate(order.created_at) }}</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -234,7 +218,7 @@ const deleteProposal = () => {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Artigos da Proposta</CardTitle>
+                    <CardTitle>Artigos da Encomenda</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div class="overflow-x-auto">
@@ -251,7 +235,7 @@ const deleteProposal = () => {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow v-for="item in proposal.items" :key="item.id">
+                                <TableRow v-for="item in order.items" :key="item.id">
                                     <TableCell>
                                         <div class="font-medium">{{ item.article.nome }}</div>
                                         <div class="text-sm text-slate-500">{{ item.article.referencia }}</div>
@@ -290,28 +274,6 @@ const deleteProposal = () => {
                 </CardContent>
             </Card>
 
-            <Card>
-                <CardHeader>
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
-                        <CardTitle class="text-lg">Informações do Sistema</CardTitle>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="label">Criado em</label>
-                            <p class="text-sm text-slate-600">{{ formatDateTime(proposal.created_at) }}</p>
-                        </div>
-                        <div>
-                            <label class="label">Atualizado em</label>
-                            <p class="text-sm text-slate-600">{{ formatDateTime(proposal.updated_at) }}</p>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
         </div>
     </AppLayout>
 </template>

@@ -203,7 +203,7 @@ class ProposalController extends Controller
         $proposal->delete();
 
         return redirect()->route('proposals.index')
-            ->with('success', "Proposta {$numero} eliminada com sucesso!");
+            ->with('success', "Proposta {$numero} eliminada com sucesso");
     }
 
     public function downloadPdf($id)

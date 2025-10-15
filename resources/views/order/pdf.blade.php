@@ -2,7 +2,7 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Proposta {{ $proposal->numero }}</title>
+    <title>Encomenda {{ $order->numero }}</title>
     <style>
         body {
             font-family: DejaVu Sans, sans-serif;
@@ -43,24 +43,27 @@
 </head>
 <body>
 <div class="header">
-    <h1>Proposta Comercial</h1>
-    <p>Número: <strong>{{ $proposal->numero }}</strong></p>
-    <p>Estado: <strong>{{ ucfirst($proposal->estado) }}</strong></p>
+    <h1>Encomenda</h1>
+    <p>Número: <strong>{{ $order->numero }}</strong></p>
+    <p>Estado: <strong>{{ ucfirst($order->estado) }}</strong></p>
+    <p>Convertido da proposta: <strong>{{ $order->proposal?->numero }}</strong></p>
 </div>
 
 <h3>Cliente</h3>
-<p><strong>{{ $proposal->client->nome }}</strong></p>
-<p>NIF: {{ $proposal->client->nif }}</p>
-@if($proposal->client->email)
-    <p>Email: {{ $proposal->client->email }}</p>
+<p><strong>{{ $order->client->nome }}</strong></p>
+<p>NIF: {{ $order->client->nif }}</p>
+@if($order->client->email)
+    <p>Email: {{ $order->client->email }}</p>
 @endif
-@if($proposal->client->telemovel)
-    <p>Telemóvel: {{ $proposal->client->telemovel }}</p>
+@if($order->client->telemovel)
+    <p>Telemóvel: {{ $order->client->telemovel }}</p>
 @endif
 
 <h3>Datas</h3>
-<p>Data da Proposta: {{ \Carbon\Carbon::parse($proposal->data_proposta)->format('d/m/Y') }}</p>
-<p>Validade: {{ \Carbon\Carbon::parse($proposal->validade)->format('d/m/Y') }}</p>
+<p>Data da criação: {{ \Carbon\Carbon::parse($order->created_at)->format('d/m/Y') }}</p>
+@if($order->data_encomenda)
+    <p>Data da Encomenda: {{ \Carbon\Carbon::parse($order->data_proposta)->format('d/m/Y') }}</p>
+@endif
 
 <h3>Artigos</h3>
 <table>
@@ -76,7 +79,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach($proposal->items as $item)
+    @foreach($order->items as $item)
         <tr>
             <td>{{ $item->article->nome }}</td>
             <td>{{ $item->supplier->nome ?? '-' }}</td>

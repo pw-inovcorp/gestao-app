@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Proposal;
 use App\Models\ProposalItem;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -23,6 +24,15 @@ class OrderController extends Controller
 
         return Inertia::render('Order/Index', [
             'orders' => $orders
+        ]);
+    }
+
+    public function show(Order $order)
+    {
+        $order->load(['client', 'items.article.ivaRate', 'items.supplier', 'proposal']);
+
+        return Inertia::render('Order/Show', [
+            'order' => $order
         ]);
     }
 
@@ -116,7 +126,7 @@ class OrderController extends Controller
             ->orderBy('nome')
             ->get(['id', 'nome', 'nif']);
 
-        return Inertia::render('Order/Create', [
+        return Inertia::render('Order/Edit', [
             'order' => $order,
             'clients' => $clients,
             'articles' => $articles,
@@ -168,6 +178,50 @@ class OrderController extends Controller
         return redirect()->route('orders.index')
             ->with('success', 'Encomenda atualizada com sucesso');
     }
+
+    public function destroy(Order $order)
+    {
+        if ($order->estado !== 'rascunho') {
+            return back()->with('error', 'Apenas encomendas em rascunho podem ser eliminadas.');
+        }
+
+        $numero = $order->numero;
+
+        $order->delete();
+
+        return redirect()->route('orders.index')
+            ->with('success', "Encomenda {$numero} eliminada com sucesso");
+    }
+
+    public function downloadPdf(Order $order)
+    {
+        $order->load([
+            'client',
+            'proposal',
+            'items.article.ivaRate',
+            'items.supplier'
+        ]);
+
+        $totalWithoutIva = $order->items->sum('subtotal');
+
+        $totalIva = $order->items->sum(function ($item) {
+            return $item->subtotal * (($item->article->ivaRate->taxa ?? 0) / 100);
+        });
+
+        $totalWithIva = $totalWithoutIva + $totalIva;
+
+        $pdf = Pdf::loadView('order/pdf', [
+            'order' => $order,
+            'totalWithoutIva' => $totalWithoutIva,
+            'totalIva' => $totalIva,
+            'totalWithIva' => $totalWithIva,
+        ]);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download("encomenda-{$order->numero}.pdf");
+    }
+
 
 
 }

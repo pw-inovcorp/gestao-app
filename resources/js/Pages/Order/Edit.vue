@@ -7,6 +7,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { useForm as useVeeForm } from 'vee-validate'
 import { ref } from 'vue'
+import ProposalForm from "@/components/ProposalForm.vue";
 
 const props = defineProps({
     clients: Array,
@@ -22,17 +23,28 @@ const formSchema = toTypedSchema(z.object({
     cliente_id: z.string().min(1, 'Selecione um cliente'),
     estado: z.enum(['rascunho', 'fechado'])
 }))
+
+const existingItems = props.order.items?.map(item => ({
+    article_id: item.article_id,
+    article: item.article,
+    fornecedor_id: item.fornecedor_id,
+    quantidade: item.quantidade,
+    preco_unitario: parseFloat(item.preco_unitario),
+    preco_custo: parseFloat(item.preco_custo || 0),
+    subtotal: parseFloat(item.subtotal)
+})) || []
+
 const veeForm = useVeeForm({
     validationSchema: formSchema,
     initialValues: {
-        cliente_id: props.proposal.cliente_id?.toString() || '',
-        estado: props.proposal.estado || 'rascunho'
+        cliente_id: props.order.cliente_id?.toString() || '',
+        estado: props.order.estado || 'rascunho'
     },
 })
 
 const inertiaForm = useForm({
-    cliente_id: props.proposal.cliente_id,
-    estado: props.proposal.estado,
+    cliente_id: props.order.cliente_id,
+    estado: props.order.estado,
     items: []
 })
 
@@ -87,6 +99,7 @@ const onSubmit = veeForm.handleSubmit((values) => {
                     :clients="clients"
                     :articles="articles"
                     :suppliers="suppliers"
+                    :existing-items="existingItems"
                 />
 
                 <div class="flex gap-4">

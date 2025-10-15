@@ -88,7 +88,11 @@ Route::middleware('role:admin')->group(function () {
 
     Route::get('/encomendas', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/encomendas/criar', [OrderController::class, 'create'])->name('orders.create');
+    Route::get('/encomendas/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/encomendas', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/encomendas/{order}/editar', [OrderController::class, 'edit'])->name('orders.edit');
     Route::patch('/encomendas/{order}', [OrderController::class, 'update'])->name('orders.update');
+    Route::delete('/encomendas/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+
+    Route::get('/encomendas/{order}/pdf', [OrderController::class, 'downloadPdf'])->name('orders.pdf');
 });

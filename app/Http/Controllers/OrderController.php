@@ -182,6 +182,19 @@ class OrderController extends Controller
             ->with('success', 'Encomenda atualizada com sucesso');
     }
 
+    public function updateStatus(Request $request, Order $Order)
+    {
+        $validated = $request->validate([
+            'estado' => ['required', 'in:rascunho,fechado']
+        ]);
+
+        $Order->update([
+            'estado' => $validated['estado']
+        ]);
+
+        return back()->with('success', "Estado alterado para {$validated['estado']} com sucesso!");
+    }
+
     public function destroy(Order $order)
     {
         if ($order->estado !== 'rascunho') {

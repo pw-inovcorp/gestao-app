@@ -93,10 +93,15 @@ Route::middleware('role:admin')->group(function () {
     Route::post('/encomendas', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/encomendas/{order}/editar', [OrderController::class, 'edit'])->name('orders.edit');
     Route::patch('/encomendas/{order}', [OrderController::class, 'update'])->name('orders.update');
+    Route::patch('/encomendas/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
     Route::delete('/encomendas/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
 
     Route::get('/encomendas/{order}/pdf', [OrderController::class, 'downloadPdf'])->name('orders.pdf');
     Route::post('/encomendas/{order}/converter-fornecedor', [OrderController::class, 'convertToSupplierOrders'])->name('orders.convertToSupplierOrders');
 
     Route::get('/encomendas-fornecedor', [SupplierOrderController::class, 'index'])->name('supplier-orders.index');
+    Route::get('/encomendas-fornecedor/{supplierOrder}', [SupplierOrderController::class, 'show'])->name('supplier-orders.show');
+    Route::patch('/encomendas-fornecedor/{supplierOrder}/status', [SupplierOrderController::class, 'updateStatus'])->name('supplier-orders.updateStatus');
+    Route::delete('/encomendas-fornecedor/{supplierOrder}', [SupplierOrderController::class, 'destroy'])->name('supplier-orders.destroy');
+    Route::get('/encomendas-fornecedor/{supplierOrder}/pdf', [SupplierOrderController::class, 'downloadPdf'])->name('supplier-orders.pdf');
 });

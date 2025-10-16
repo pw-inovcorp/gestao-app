@@ -7,6 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Pagination from '@/components/Pagination.vue'
 import {Link, router} from '@inertiajs/vue3'
 import {ref} from "vue";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select/index.js";
 
 const props = defineProps({
     orders: Object
@@ -44,6 +52,22 @@ const deleteOrder = (order) => {
             onFinish: () => {
                 deletingOrderId.value = null
             }
+        })
+    }
+}
+
+const updateStatus = (order, newStatus) => {
+    if (order.estado === newStatus) return
+
+    const message = newStatus === 'fechado'
+        ? `Ao fechar a encomenda ${order.numero}, a data será definida. Confirma?`
+        : `Tem a certeza que deseja voltar a encomenda ${order.numero} ao estado de rascunho?`
+
+    if (confirm(message)) {
+        router.patch(`/encomendas/${order.id}/status`, {
+            estado: newStatus
+        }, {
+            preserveScroll: true
         })
     }
 }
@@ -95,9 +119,30 @@ const deleteOrder = (order) => {
                                     <TableCell>{{ formatDate(order.data_encomenda) }}</TableCell>
                                     <TableCell class="font-medium">{{ formatPrice(order.valor_total) }}</TableCell>
                                     <TableCell>
-                                        <Badge :variant="order.estado === 'fechado' ? 'default' : 'secondary'">
-                                            {{ order.estado }}
-                                        </Badge>
+                                        <Select
+                                            :model-value="order.estado"
+                                            @update:model-value="(value) => updateStatus(order, value)"
+                                        >
+                                            <SelectTrigger class="w-32">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectItem value="rascunho">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-2 h-2 rounded-full bg-slate-400"></div>
+                                                            Rascunho
+                                                        </div>
+                                                    </SelectItem>
+                                                    <SelectItem value="fechado">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                                            Fechado
+                                                        </div>
+                                                    </SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
                                     </TableCell>
                                     <TableCell>
                                         <div class="flex justify-end gap-2">
@@ -160,9 +205,32 @@ const deleteOrder = (order) => {
                                     <div class="flex-1 min-w-0">
                                         <p class="font-medium text-lg">{{ order.numero }}</p>
                                         <p class="text-sm text-slate-500 truncate">{{ order.client?.nome || '-' }}</p>
-                                        <Badge :variant="order.estado === 'fechado' ? 'default' : 'secondary'" class="mt-2">
-                                            {{ order.estado }}
-                                        </Badge>
+                                        <TableCell>
+                                            <Select
+                                                :model-value="order.estado"
+                                                @update:model-value="(value) => updateStatus(order, value)"
+                                            >
+                                                <SelectTrigger class="w-32">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectItem value="rascunho">
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-2 h-2 rounded-full bg-slate-400"></div>
+                                                                Rascunho
+                                                            </div>
+                                                        </SelectItem>
+                                                        <SelectItem value="fechado">
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                                                Fechado
+                                                            </div>
+                                                        </SelectItem>
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        </TableCell>
                                     </div>
                                     <div class="flex justify-end gap-2">
 

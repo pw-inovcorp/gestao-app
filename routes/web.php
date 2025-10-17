@@ -38,6 +38,10 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Home');
     })->name('home');
 
+    Route::get('/utilizadores', [UserController::class, 'index'])->name('users.index');
+    Route::get('/utilizadores/{user}/editar', [UserController::class, 'edit'])->name('users.edit');
+    Route::patch('/utilizadores/{user}', [UserController::class, 'update'])->name('users.update');
+
     Route::get('/entidades',[EntityController::class,'index'])->name('entities.index');
 
     Route::get('/contactos',[ContactController::class,'index'])->name('contacts.index');
@@ -47,11 +51,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('role:admin')->group(function () {
-    Route::get('/utilizadores', [UserController::class, 'index'])->name('users.index');
+
     Route::get('/utilizadores/criar', [UserController::class, 'create'])->name('users.create');
     Route::post('/utilizadores', [UserController::class, 'store'])->name('users.store');
-    Route::get('/utilizadores/{user}/editar', [UserController::class, 'edit'])->name('users.edit');
-    Route::patch('/utilizadores/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('utilizadores/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
     Route::get('/entidades/criar', [EntityController::class, 'create'])->name('entities.create');
@@ -108,7 +110,10 @@ Route::middleware('role:admin')->group(function () {
 
     Route::get('/faturas-fornecedor', [SupplierInvoiceController::class, 'index'])->name('supplier-invoices.index');
     Route::get('/faturas-fornecedor/criar', [SupplierInvoiceController::class, 'create'])->name('supplier-invoices.create');
+    Route::get('/faturas-fornecedor/{supplierInvoice}', [SupplierInvoiceController::class, 'show'])->name('supplier-invoices.show');
     Route::post('/faturas-fornecedor', [SupplierInvoiceController::class, 'store'])->name('supplier-invoices.store');
+    Route::delete('/faturas-fornecedor/{supplierInvoice}', [SupplierInvoiceController::class, 'destroy'])->name('supplier-invoices.destroy');
+    Route::get('/faturas-fornecedor/{supplierInvoice}/download/{type}', [SupplierInvoiceController::class, 'downloadFile'])->name('supplier-invoices.download');
     Route::patch('/faturas-fornecedor/{supplierInvoice}/status', [SupplierInvoiceController::class, 'updateStatus'])->name('supplier-invoices.updateStatus');
     Route::post('/faturas-fornecedor/{supplierInvoice}/comprovativo', [SupplierInvoiceController::class, 'uploadPaymentProof'])->name('supplier-invoices.uploadProof');
 });

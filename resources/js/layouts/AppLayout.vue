@@ -1,6 +1,6 @@
 <script setup>
     import { computed, watch } from 'vue'
-    import { usePage, router } from '@inertiajs/vue3'
+    import {usePage, router, Link} from '@inertiajs/vue3'
     import { Button } from '@/components/ui/button'
     import Sidebar from '@/components/Sidebar.vue'
     import { ref } from 'vue'
@@ -13,6 +13,8 @@
 
     const flashSuccess = computed(() => page.props.flash?.success)
     const flashError = computed(() => page.props.flash?.error)
+
+    const user = computed(() => page.props.auth?.user)
 
 
     watch(flashSuccess, () => showSuccess.value = true)
@@ -27,7 +29,7 @@
 </script>
 
 <template>
-    <div class="flex h-screen overflow-hidden bg-slate-50">
+    <div class="flex h-screen overflow-hidden bg-zinc-50">
 
         <div
             v-if="sidebarOpen"
@@ -50,8 +52,10 @@
                 </div>
 
                 <div class="flex items-center gap-2 sm:gap-4 shrink-0">
-                    <span class="text-sm text-slate-600 hidden sm:inline truncate max-w-[150px]">
-                        {{ page.props.auth.user.name }}
+                    <span class="text-sm text-slate-600 sm:inline truncate max-w-[150px] hover:underline">
+                        <Link :href="`/utilizadores/${user.id}/editar`">
+                            {{ page.props.auth.user.name }}
+                        </Link>
                     </span>
                     <Button variant="ghost" size="sm" @click="logout">Sair</Button>
                 </div>

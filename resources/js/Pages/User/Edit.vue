@@ -33,7 +33,7 @@
         email: z.string().email('Email inválido'),
         mobile: z.string().optional(),
         password: z.string().min(8, 'Password deve ter no mínimo 8 caracteres').optional().or(z.literal('')),
-        password_confirmation: z.string().min(8, 'Confirmação de password deve ter no mínimo 8 caracteres'),
+        password_confirmation: z.string().min(8, 'Confirmação de password deve ter no mínimo 8 caracteres').optional().or(z.literal('')),
         role: z.enum(['admin', 'user']),
         status: z.enum(['active', 'inactive']),
     }).refine((data) => data.password === data.password_confirmation, {
@@ -78,7 +78,7 @@
                     <h1 class="text-3xl font-bold">Editar Utilizador</h1>
                     <p class="text-slate-600 mt-1">Atualizar dados do utilizador</p>
                 </div>
-                <Link href="/utilizadores">
+                <Link v-if="user?.role === 'admin'" href="/utilizadores">
                     <Button variant="outline">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -146,7 +146,7 @@
                             </FormItem>
                         </FormField>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <div v-if="user?.role === 'admin'" class="grid grid-cols-2 gap-4">
                             <FormField v-slot="{ componentField }" name="role">
                                 <FormItem>
                                     <FormLabel>Role *</FormLabel>

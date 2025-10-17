@@ -65,8 +65,8 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'mobile' => ['nullable', 'string', 'max:20'],
-            'password' => ['required', 'confirmed', Password::defaults()],
-            'password_confirmation' => ['required'],
+            'password' => ['nullable', 'confirmed', Password::defaults()],
+            'password_confirmation' => ['nullable'],
             'role' => ['required', Rule::in(['admin', 'user'])],
             'status' => ['required', Rule::in(['active', 'inactive'])],
         ]);
@@ -86,18 +86,18 @@ class UserController extends Controller
         $user->update($data);
 
         return redirect()->route('users.index')
-            ->with('success', 'Utilizador atualizado com sucesso!');
+            ->with('success', 'Utilizador atualizado com sucesso');
     }
 
     public function destroy(User $user)
     {
         if ($user->id === auth()->id()) {
-            return back()->with('error', 'Não pode eliminar o seu próprio utilizador!');
+            return back()->with('error', 'Não pode eliminar o seu próprio utilizador');
         }
 
         $user->delete();
 
         return redirect()->route('users.index')
-            ->with('success', 'Utilizador eliminado com sucesso!');
+            ->with('success', 'Utilizador eliminado com sucesso');
     }
 }

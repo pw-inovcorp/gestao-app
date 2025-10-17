@@ -42,6 +42,36 @@ class SupplierInvoiceController extends Controller
         ]);
     }
 
+    public function show(SupplierInvoice $supplierInvoice)
+    {
+        $supplierInvoice->load(['supplier', 'supplierOrder']);
+
+        return Inertia::render('SupplierInvoice/Show', [
+            'invoice' => $supplierInvoice
+        ]);
+    }
+
+    public function destroy(SupplierInvoice $supplierInvoice)
+    {
+        if ($supplierInvoice->estado !== 'pendente_pagamento') {
+            return back()->with('error', 'Apenas faturas pendentes podem ser eliminadas.');
+        }
+
+        if ($supplierInvoice->documento && Storage::disk('local')->exists($supplierInvoice->documento)) {
+            Storage::disk('local')->delete($supplierInvoice->documento);
+        }
+
+        if ($supplierInvoice->comprovativo_pagamento && Storage::disk('local')->exists($supplierInvoice->comprovativo_pagamento)) {
+            Storage::disk('local')->delete($supplierInvoice->comprovativo_pagamento);
+        }
+
+        $numero = $supplierInvoice->numero;
+        $supplierInvoice->delete();
+
+        return redirect()->route('supplier-invoices.index')
+            ->with('success', "Fatura {$numero} eliminada com sucesso");
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -118,5 +148,17 @@ class SupplierInvoiceController extends Controller
         }
 
         return back()->with('success', 'Comprovativo guardado! (Fornecedor sem email)');
+    }
+
+    public function downloadFile(SupplierInvoice $supplierInvoice, $type)
+    {
+        $field = $type === 'documento' ? 'documento' : 'comprovativo_pagamento';
+        $path = $supplierInvoice->$field;
+
+        if (!$path || !Storage::disk('local')->exists($path)) {
+            abort(404, 'Ficheiro não encontrado');
+        }
+
+        return Storage::disk('local')->download($path);
     }
 }

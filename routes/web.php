@@ -5,6 +5,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EntityController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProposalController;
+use App\Http\Controllers\SupplierInvoiceController;
 use App\Http\Controllers\SupplierOrderController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -104,4 +105,8 @@ Route::middleware('role:admin')->group(function () {
     Route::patch('/encomendas-fornecedor/{supplierOrder}/status', [SupplierOrderController::class, 'updateStatus'])->name('supplier-orders.updateStatus');
     Route::delete('/encomendas-fornecedor/{supplierOrder}', [SupplierOrderController::class, 'destroy'])->name('supplier-orders.destroy');
     Route::get('/encomendas-fornecedor/{supplierOrder}/pdf', [SupplierOrderController::class, 'downloadPdf'])->name('supplier-orders.pdf');
+
+    Route::get('/faturas-fornecedor', [SupplierInvoiceController::class, 'index'])->name('supplier-invoices.index');
+    Route::get('/faturas-fornecedor/criar', [SupplierInvoiceController::class, 'create'])->name('supplier-invoices.create');
+    Route::post('/faturas-fornecedor', [SupplierInvoiceController::class, 'store'])->name('supplier-invoices.store');
 });

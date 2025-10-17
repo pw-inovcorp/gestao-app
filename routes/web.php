@@ -85,6 +85,7 @@ Route::middleware('role:admin')->group(function () {
     Route::post('propostas', [ProposalController::class, 'store'])->name('proposals.store');
     Route::get('propostas/{proposal}/editar', [ProposalController::class, 'edit'])->name('proposals.edit');
     Route::patch('propostas/{proposal}', [ProposalController::class, 'update'])->name('proposals.update');
+    Route::patch('propostas/{proposal}/status', [ProposalController::class, 'updateStatus'])->name('proposals.updateStatus');
     Route::delete('propostas/{proposal}', [ProposalController::class, 'destroy'])->name('proposals.destroy');
 
     Route::get('/propostas/{id}/pdf', [ProposalController::class, 'downloadPdf'])->name('proposal.pdf');

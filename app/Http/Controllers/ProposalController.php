@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Entity;
+use App\Models\Order;
 use App\Models\Proposal;
 use App\Models\ProposalItem;
 use Illuminate\Http\Request;
@@ -275,6 +276,20 @@ class ProposalController extends Controller
 
         return redirect()->route('orders.index')
             ->with('success', "Proposta {$proposal->numero} convertida em encomenda {$order->numero} com sucesso!");
+    }
+
+    public function updateStatus(Request $request, Proposal $proposal)
+    {
+        $validated = $request->validate([
+            'estado' => ['required', 'in:rascunho,fechado']
+        ]);
+
+        $proposal->update([
+            'estado' => $validated['estado'],
+            'data_proposta' => $validated['estado'] === 'fechado' ? now() : null,
+        ]);
+
+        return back()->with('success', "Estado alterado para {$validated['estado']} com sucesso");
     }
 
 

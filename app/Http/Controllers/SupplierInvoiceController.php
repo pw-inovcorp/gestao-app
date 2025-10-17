@@ -7,6 +7,8 @@ use App\Models\SupplierInvoice;
 use App\Models\SupplierOrder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class SupplierInvoiceController extends Controller
 {
@@ -75,9 +77,46 @@ class SupplierInvoiceController extends Controller
 
         $supplierInvoice->update([
             'estado' => $validated['estado'],
-            'data_pagamento' => $validated['estado'] === 'paga' ? now() : null
+            'data_pagamento' => $validated['estado'] === 'paga' ? now() : null,
+            'comprovativo_pagamento' => $validated['estado'] === 'paga' ? $supplierInvoice->comprovativo_pagamento : null
         ]);
 
         return back()->with('success', "Estado alterado para {$validated['estado']} com sucesso!");
+    }
+
+    public function uploadPaymentProof(Request $request, SupplierInvoice $supplierInvoice)
+    {
+        $validated = $request->validate([
+            'comprovativo_pagamento' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+        ]);
+
+        $path = $request->file('comprovativo_pagamento')->store('supplier_invoices/payment_proofs', 'local');
+
+        $supplierInvoice->update([
+            'comprovativo_pagamento' => $path
+        ]);
+
+
+        $supplier = $supplierInvoice->supplier;
+
+        if ($supplier && $supplier->email) {
+            try {
+                Mail::send('email.payment-proof', [
+                    'invoice' => $supplierInvoice,
+                    'supplier' => $supplier
+                ], function ($message) use ($supplier, $supplierInvoice, $path) {
+                    $message->to($supplier->email)
+                        ->subject("Comprovativo de Pagamento - Fatura {$supplierInvoice->numero}");
+
+                    $message->attach(Storage::disk('local')->path($path));
+                });
+
+                return back()->with('success', 'Comprovativo guardado e email enviado com sucesso!');
+            } catch (\Exception $e) {
+                return back()->with('success', 'Comprovativo guardado, mas erro ao enviar email: ' . $e->getMessage());
+            }
+        }
+
+        return back()->with('success', 'Comprovativo guardado! (Fornecedor sem email)');
     }
 }

@@ -41,7 +41,8 @@ class SupplierOrderController extends Controller
         ]);
 
         $supplierOrder->update([
-            'estado' => $validated['estado']
+            'estado' => $validated['estado'],
+            'data_encomenda' => $validated['estado'] === 'fechado' ? now() : null
         ]);
 
         return back()->with('success', "Estado alterado para {$validated['estado']} com sucesso!");

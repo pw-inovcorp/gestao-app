@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Pagination from '@/components/Pagination.vue'
-import { Link } from '@inertiajs/vue3'
+import PaymentProofModal from '@/components/PaymentProofModal.vue'
+import { Link, router } from '@inertiajs/vue3'
+import { ref } from 'vue'
 import {
     Select,
     SelectContent,
@@ -17,6 +19,9 @@ import {
 const props = defineProps({
     invoices: Object
 })
+
+const showModal = ref(false)
+const selectedInvoice = ref(null)
 
 const formatPrice = (price) => {
     return new Intl.NumberFormat('pt-PT', {
@@ -37,11 +42,20 @@ const formatDate = (date) => {
 const updateStatus = (invoice, newStatus) => {
     if (invoice.estado === newStatus) return
 
-    const message = newStatus === 'paga'
-        ? `Ao marcar a fatura ${invoice.numero} como paga, pretende enviar o comprovativo ao fornecedor?`
-        : `Tem a certeza que deseja voltar a fatura ${invoice.numero} ao estado pendente?`
+    if (newStatus === 'paga') {
+        router.patch(`/faturas-fornecedor/${invoice.id}/status`, {
+            estado: newStatus
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                selectedInvoice.value = invoice
+                showModal.value = true
+            }
+        })
+        return
+    }
 
-    if (confirm(message)) {
+    if (confirm(`Voltar a fatura ${invoice.numero} ao estado pendente?`)) {
         router.patch(`/faturas-fornecedor/${invoice.id}/status`, {
             estado: newStatus
         }, {
@@ -50,6 +64,10 @@ const updateStatus = (invoice, newStatus) => {
     }
 }
 
+const closeModal = () => {
+    showModal.value = false
+    selectedInvoice.value = null
+}
 </script>
 
 <template>
@@ -65,7 +83,7 @@ const updateStatus = (invoice, newStatus) => {
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        Nova Proposta
+                        Nova Fatura
                     </Button>
                 </Link>
             </div>
@@ -85,7 +103,6 @@ const updateStatus = (invoice, newStatus) => {
                                     <TableHead>Fornecedor</TableHead>
                                     <TableHead class="text-right">Valor Total</TableHead>
                                     <TableHead>Estado</TableHead>
-                                    <TableHead class="text-right">Ações</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -122,11 +139,6 @@ const updateStatus = (invoice, newStatus) => {
                                             </SelectContent>
                                         </Select>
                                     </TableCell>
-                                    <TableCell>
-                                        <div class="flex justify-end gap-2">
-
-                                        </div>
-                                    </TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
@@ -140,7 +152,7 @@ const updateStatus = (invoice, newStatus) => {
                                     <div class="flex-1 min-w-0">
                                         <p class="font-medium text-lg">{{ invoice.numero }}</p>
                                         <p class="text-sm text-slate-500 truncate">{{ invoice.supplier?.nome || '-' }}</p>
-                                        <TableCell>
+                                        <div class="mt-2">
                                             <Select
                                                 :model-value="invoice.estado"
                                                 @update:model-value="(value) => updateStatus(invoice, value)"
@@ -165,10 +177,8 @@ const updateStatus = (invoice, newStatus) => {
                                                     </SelectGroup>
                                                 </SelectContent>
                                             </Select>
-                                        </TableCell>
+                                        </div>
                                     </div>
-
-
                                 </div>
 
                                 <div class="space-y-2 text-sm">
@@ -188,6 +198,12 @@ const updateStatus = (invoice, newStatus) => {
                     <Pagination :pagination="invoices" />
                 </CardContent>
             </Card>
+
+            <PaymentProofModal
+                :open="showModal"
+                :invoice="selectedInvoice"
+                @close="closeModal"
+            />
         </div>
     </AppLayout>
 </template>

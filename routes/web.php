@@ -110,4 +110,5 @@ Route::middleware('role:admin')->group(function () {
     Route::get('/faturas-fornecedor/criar', [SupplierInvoiceController::class, 'create'])->name('supplier-invoices.create');
     Route::post('/faturas-fornecedor', [SupplierInvoiceController::class, 'store'])->name('supplier-invoices.store');
     Route::patch('/faturas-fornecedor/{supplierInvoice}/status', [SupplierInvoiceController::class, 'updateStatus'])->name('supplier-invoices.updateStatus');
+    Route::post('/faturas-fornecedor/{supplierInvoice}/comprovativo', [SupplierInvoiceController::class, 'uploadPaymentProof'])->name('supplier-invoices.uploadProof');
 });

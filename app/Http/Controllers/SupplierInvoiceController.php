@@ -27,7 +27,7 @@ class SupplierInvoiceController extends Controller
         $suppliers = Entity::where('is_fornecedor', true)
             ->where('estado', 'ativo')
             ->orderBy('nome')
-            ->get(['id', 'nome', 'nif']);
+            ->get(['id', 'nome', 'nif', 'email', 'telefone']);
 
         $supplierOrders = SupplierOrder::with('supplier')
             ->where('estado', 'fechado')
@@ -57,7 +57,7 @@ class SupplierInvoiceController extends Controller
 
 
         if ($request->hasFile('documento')) {
-            $path = $request->file('documento')->store('supplier_invoices/documents', 'private');
+            $path = $request->file('documento')->store('supplier_invoices/documents', 'local');
             $validated['documento'] = $path;
         }
 
@@ -65,5 +65,19 @@ class SupplierInvoiceController extends Controller
 
         return redirect()->route('supplier-invoices.index')
             ->with('success', 'Fatura criada com sucesso');
+    }
+
+    public function updateStatus(Request $request, SupplierInvoice $supplierInvoice)
+    {
+        $validated = $request->validate([
+            'estado' => ['required', 'in:pendente_pagamento,paga']
+        ]);
+
+        $supplierInvoice->update([
+            'estado' => $validated['estado'],
+            'data_pagamento' => $validated['estado'] === 'paga' ? now() : null
+        ]);
+
+        return back()->with('success', "Estado alterado para {$validated['estado']} com sucesso!");
     }
 }

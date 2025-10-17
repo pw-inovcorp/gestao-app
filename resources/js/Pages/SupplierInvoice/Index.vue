@@ -1,11 +1,18 @@
 <script setup>
 import AppLayout from '@/layouts/AppLayout.vue'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Pagination from '@/components/Pagination.vue'
 import { Link } from '@inertiajs/vue3'
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@/components/ui/select'
 
 const props = defineProps({
     invoices: Object
@@ -27,13 +34,22 @@ const formatDate = (date) => {
     })
 }
 
-const getBadgeVariant = (estado) => {
-    return estado === 'paga' ? 'default' : 'secondary'
+const updateStatus = (invoice, newStatus) => {
+    if (invoice.estado === newStatus) return
+
+    const message = newStatus === 'paga'
+        ? `Ao marcar a fatura ${invoice.numero} como paga, pretende enviar o comprovativo ao fornecedor?`
+        : `Tem a certeza que deseja voltar a fatura ${invoice.numero} ao estado pendente?`
+
+    if (confirm(message)) {
+        router.patch(`/faturas-fornecedor/${invoice.id}/status`, {
+            estado: newStatus
+        }, {
+            preserveScroll: true
+        })
+    }
 }
 
-const getEstadoLabel = (estado) => {
-    return estado === 'paga' ? 'Paga' : 'Pendente'
-}
 </script>
 
 <template>
@@ -81,9 +97,30 @@ const getEstadoLabel = (estado) => {
                                         {{ formatPrice(invoice.valor_total) }}
                                     </TableCell>
                                     <TableCell>
-                                        <Badge :variant="getBadgeVariant(invoice.estado)">
-                                            {{ getEstadoLabel(invoice.estado) }}
-                                        </Badge>
+                                        <Select
+                                            :model-value="invoice.estado"
+                                            @update:model-value="(value) => updateStatus(invoice, value)"
+                                        >
+                                            <SelectTrigger class="w-40">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectItem value="pendente_pagamento">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-2 h-2 rounded-full bg-amber-500"></div>
+                                                            Pendente
+                                                        </div>
+                                                    </SelectItem>
+                                                    <SelectItem value="paga">
+                                                        <div class="flex items-center gap-2">
+                                                            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                                            Paga
+                                                        </div>
+                                                    </SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
                                     </TableCell>
                                     <TableCell>
                                         <div class="flex justify-end gap-2">
@@ -103,9 +140,32 @@ const getEstadoLabel = (estado) => {
                                     <div class="flex-1 min-w-0">
                                         <p class="font-medium text-lg">{{ invoice.numero }}</p>
                                         <p class="text-sm text-slate-500 truncate">{{ invoice.supplier?.nome || '-' }}</p>
-                                        <Badge :variant="getBadgeVariant(invoice.estado)" class="mt-2">
-                                            {{ getEstadoLabel(invoice.estado) }}
-                                        </Badge>
+                                        <TableCell>
+                                            <Select
+                                                :model-value="invoice.estado"
+                                                @update:model-value="(value) => updateStatus(invoice, value)"
+                                            >
+                                                <SelectTrigger class="w-40">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectItem value="pendente_pagamento">
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-2 h-2 rounded-full bg-amber-500"></div>
+                                                                Pendente
+                                                            </div>
+                                                        </SelectItem>
+                                                        <SelectItem value="paga">
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                                                Paga
+                                                            </div>
+                                                        </SelectItem>
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                        </TableCell>
                                     </div>
 
 

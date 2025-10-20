@@ -18,6 +18,7 @@ Route::get('/', function () {
 });
 
 
+// Rotas de Guest
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {
         return Inertia::render('Auth/Login');
@@ -32,89 +33,104 @@ Route::middleware('guest')->group(function () {
     })->name('password.request');
 });
 
-
+// Rotas autenticadas
 Route::middleware('auth')->group(function () {
+
+
     Route::get('/home', function () {
         return Inertia::render('Home');
     })->name('home');
 
-    Route::get('/utilizadores', [UserController::class, 'index'])->name('users.index');
-    Route::get('/utilizadores/{user}/editar', [UserController::class, 'edit'])->name('users.edit');
-    Route::patch('/utilizadores/{user}', [UserController::class, 'update'])->name('users.update');
 
-    Route::get('/entidades',[EntityController::class,'index'])->name('entities.index');
+    Route::prefix('utilizadores')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->middleware('permission:users.view')->name('index');
+        Route::get('/criar', [UserController::class, 'create'])->middleware('permission:users.create')->name('create');
+        Route::post('/', [UserController::class, 'store'])->middleware('permission:users.create')->name('store');
+        Route::get('/{user}/editar', [UserController::class, 'edit'])->name('edit'); // Permissão verificada no controller
+        Route::patch('/{user}', [UserController::class, 'update'])->name('update'); // Permissão verificada no controller
+        Route::delete('/{user}', [UserController::class, 'destroy'])->middleware('permission:users.delete')->name('destroy');
+    });
 
-    Route::get('/contactos',[ContactController::class,'index'])->name('contacts.index');
 
-    Route::get('/artigos',[ArticleController::class,'index'])->name('articles.index');
+    Route::prefix('entidades')->name('entities.')->group(function () {
+        Route::post('/check-vies', [EntityController::class, 'checkVies'])->middleware('permission:entities.vies')->name('checkVies');
+        Route::get('/', [EntityController::class, 'index'])->middleware('permission:entities.view')->name('index');
+        Route::get('/criar', [EntityController::class, 'create'])->middleware('permission:entities.create')->name('create');
+        Route::post('/', [EntityController::class, 'store'])->middleware('permission:entities.create')->name('store');
+        Route::get('/{entity}', [EntityController::class, 'show'])->middleware('permission:entities.view')->name('show');
+        Route::get('/{entity}/editar', [EntityController::class, 'edit'])->middleware('permission:entities.edit')->name('edit');
+        Route::patch('/{entity}', [EntityController::class, 'update'])->middleware('permission:entities.edit')->name('update');
+        Route::delete('/{entity}', [EntityController::class, 'destroy'])->middleware('permission:entities.delete')->name('destroy');
+    });
 
-});
 
-Route::middleware('role:admin')->group(function () {
+    Route::prefix('contactos')->name('contacts.')->group(function () {
+        Route::get('/', [ContactController::class, 'index'])->middleware('permission:contacts.view')->name('index');
+        Route::get('/criar', [ContactController::class, 'create'])->middleware('permission:contacts.create')->name('create');
+        Route::post('/', [ContactController::class, 'store'])->middleware('permission:contacts.create')->name('store');
+        Route::get('/{contact}', [ContactController::class, 'show'])->middleware('permission:contacts.view')->name('show');
+        Route::get('/{contact}/editar', [ContactController::class, 'edit'])->middleware('permission:contacts.edit')->name('edit');
+        Route::patch('/{contact}', [ContactController::class, 'update'])->middleware('permission:contacts.edit')->name('update');
+        Route::delete('/{contact}', [ContactController::class, 'destroy'])->middleware('permission:contacts.delete')->name('destroy');
+    });
 
-    Route::get('/utilizadores/criar', [UserController::class, 'create'])->name('users.create');
-    Route::post('/utilizadores', [UserController::class, 'store'])->name('users.store');
-    Route::delete('utilizadores/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
-    Route::get('/entidades/criar', [EntityController::class, 'create'])->name('entities.create');
-    Route::post('/entidades', [EntityController::class, 'store'])->name('entities.store');
-    Route::get('/entidades/{entity}', [EntityController::class, 'show'])->name('entities.show');
-    Route::get('/entidades/{entity}/editar', [EntityController::class, 'edit'])->name('entities.edit');
-    Route::patch('/entidades/{entity}', [EntityController::class, 'update'])->name('entities.update');
-    Route::delete('/entidades/{entity}', [EntityController::class, 'destroy'])->name('entities.destroy');
+    Route::prefix('artigos')->name('articles.')->group(function () {
+        Route::get('/', [ArticleController::class, 'index'])->middleware('permission:articles.view')->name('index');
+        Route::get('/criar', [ArticleController::class, 'create'])->middleware('permission:articles.create')->name('create');
+        Route::post('/', [ArticleController::class, 'store'])->middleware('permission:articles.create')->name('store');
+        Route::get('/{article}', [ArticleController::class, 'show'])->middleware('permission:articles.view')->name('show');
+        Route::get('/{article}/editar', [ArticleController::class, 'edit'])->middleware('permission:articles.edit')->name('edit');
+        Route::patch('/{article}', [ArticleController::class, 'update'])->middleware('permission:articles.edit')->name('update');
+        Route::delete('/{article}', [ArticleController::class, 'destroy'])->middleware('permission:articles.delete')->name('destroy');
+    });
 
-    Route::post('/entidades/check-vies', [EntityController::class, 'checkVies'])->name('entities.checkVies');
 
-    Route::get('/contactos/criar', [ContactController::class, 'create'])->name('contacts.create');
-    Route::post('/contactos', [ContactController::class, 'store'])->name('contacts.store');
-    Route::get('/contactos/{contact}', [ContactController::class, 'show'])->name('contacts.show');
-    Route::get('/contactos/{contact}/editar', [ContactController::class, 'edit'])->name('contacts.edit');
-    Route::patch('/contactos/{contact}', [ContactController::class, 'update'])->name('contacts.update');
-    Route::delete('/contactos/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
+    Route::prefix('propostas')->name('proposals.')->group(function () {
+        Route::get('/', [ProposalController::class, 'index'])->middleware('permission:proposals.view')->name('index');
+        Route::get('/criar', [ProposalController::class, 'create'])->middleware('permission:proposals.create')->name('create');
+        Route::post('/', [ProposalController::class, 'store'])->middleware('permission:proposals.create')->name('store');
+        Route::get('/{proposal}', [ProposalController::class, 'show'])->middleware('permission:proposals.view')->name('show');
+        Route::get('/{proposal}/editar', [ProposalController::class, 'edit'])->middleware('permission:proposals.edit')->name('edit');
+        Route::patch('/{proposal}', [ProposalController::class, 'update'])->middleware('permission:proposals.edit')->name('update');
+        Route::patch('/{proposal}/status', [ProposalController::class, 'updateStatus'])->middleware('permission:proposals.edit')->name('updateStatus');
+        Route::get('/{id}/pdf', [ProposalController::class, 'downloadPdf'])->middleware('permission:proposals.pdf')->name('pdf');
+        Route::post('/{id}/converter-encomenda', [ProposalController::class, 'convertToOrder'])->middleware('permission:proposals.convert')->name('convertToOrder');
+        Route::delete('/{proposal}', [ProposalController::class, 'destroy'])->middleware('permission:proposals.delete')->name('destroy');
+    });
 
-    Route::get('/artigos/criar', [ArticleController::class, 'create'])->name('articles.create');
-    Route::post('/artigos', [ArticleController::class, 'store'])->name('articles.store');
-    Route::get('/artigos/{article}', [ArticleController::class, 'show'])->name('article.show');
-    Route::get('/artigos/{article}/editar', [ArticleController::class, 'edit'])->name('articles.edit');
-    Route::patch('/artigos/{article}', [ArticleController::class, 'update'])->name('articles.update');
-    Route::delete('/artigos/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 
-    Route::get('/propostas', [ProposalController::class, 'index'])->name('proposals.index');
-    Route::get('propostas/criar', [ProposalController::class, 'create'])->name('proposals.create');
-    Route::get('propostas/{proposal}', [ProposalController::class, 'show'])->name('proposals.show');
-    Route::post('propostas', [ProposalController::class, 'store'])->name('proposals.store');
-    Route::get('propostas/{proposal}/editar', [ProposalController::class, 'edit'])->name('proposals.edit');
-    Route::patch('propostas/{proposal}', [ProposalController::class, 'update'])->name('proposals.update');
-    Route::patch('propostas/{proposal}/status', [ProposalController::class, 'updateStatus'])->name('proposals.updateStatus');
-    Route::delete('propostas/{proposal}', [ProposalController::class, 'destroy'])->name('proposals.destroy');
+    Route::prefix('encomendas')->name('orders.')->group(function () {
+        Route::get('/', [OrderController::class, 'index'])->middleware('permission:orders.view')->name('index');
+        Route::get('/criar', [OrderController::class, 'create'])->middleware('permission:orders.create')->name('create');
+        Route::post('/', [OrderController::class, 'store'])->middleware('permission:orders.create')->name('store');
+        Route::get('/{order}', [OrderController::class, 'show'])->middleware('permission:orders.view')->name('show');
+        Route::get('/{order}/editar', [OrderController::class, 'edit'])->middleware('permission:orders.edit')->name('edit');
+        Route::patch('/{order}', [OrderController::class, 'update'])->middleware('permission:orders.edit')->name('update');
+        Route::patch('/{order}/status', [OrderController::class, 'updateStatus'])->middleware('permission:orders.edit')->name('updateStatus');
+        Route::get('/{order}/pdf', [OrderController::class, 'downloadPdf'])->middleware('permission:orders.pdf')->name('pdf');
+        Route::post('/{order}/converter-fornecedor', [OrderController::class, 'convertToSupplierOrders'])->middleware('permission:orders.convert')->name('convertToSupplierOrders');
+        Route::delete('/{order}', [OrderController::class, 'destroy'])->middleware('permission:orders.delete')->name('destroy');
+    });
 
-    Route::get('/propostas/{id}/pdf', [ProposalController::class, 'downloadPdf'])->name('proposal.pdf');
-    Route::post('/propostas/{id}/converter-encomenda', [ProposalController::class, 'convertToOrder'])->name('proposals.convertToOrder');
 
-    Route::get('/encomendas', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/encomendas/criar', [OrderController::class, 'create'])->name('orders.create');
-    Route::get('/encomendas/{order}', [OrderController::class, 'show'])->name('orders.show');
-    Route::post('/encomendas', [OrderController::class, 'store'])->name('orders.store');
-    Route::get('/encomendas/{order}/editar', [OrderController::class, 'edit'])->name('orders.edit');
-    Route::patch('/encomendas/{order}', [OrderController::class, 'update'])->name('orders.update');
-    Route::patch('/encomendas/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
-    Route::delete('/encomendas/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+    Route::prefix('encomendas-fornecedor')->name('supplier-orders.')->group(function () {
+        Route::get('/', [SupplierOrderController::class, 'index'])->middleware('permission:supplier-orders.view')->name('index');
+        Route::get('/{supplierOrder}', [SupplierOrderController::class, 'show'])->middleware('permission:supplier-orders.view')->name('show');
+        Route::patch('/{supplierOrder}/status', [SupplierOrderController::class, 'updateStatus'])->middleware('permission:supplier-orders.edit')->name('updateStatus');
+        Route::get('/{supplierOrder}/pdf', [SupplierOrderController::class, 'downloadPdf'])->middleware('permission:supplier-orders.pdf')->name('pdf');
+        Route::delete('/{supplierOrder}', [SupplierOrderController::class, 'destroy'])->middleware('permission:supplier-orders.delete')->name('destroy');
+    });
 
-    Route::get('/encomendas/{order}/pdf', [OrderController::class, 'downloadPdf'])->name('orders.pdf');
-    Route::post('/encomendas/{order}/converter-fornecedor', [OrderController::class, 'convertToSupplierOrders'])->name('orders.convertToSupplierOrders');
 
-    Route::get('/encomendas-fornecedor', [SupplierOrderController::class, 'index'])->name('supplier-orders.index');
-    Route::get('/encomendas-fornecedor/{supplierOrder}', [SupplierOrderController::class, 'show'])->name('supplier-orders.show');
-    Route::patch('/encomendas-fornecedor/{supplierOrder}/status', [SupplierOrderController::class, 'updateStatus'])->name('supplier-orders.updateStatus');
-    Route::delete('/encomendas-fornecedor/{supplierOrder}', [SupplierOrderController::class, 'destroy'])->name('supplier-orders.destroy');
-    Route::get('/encomendas-fornecedor/{supplierOrder}/pdf', [SupplierOrderController::class, 'downloadPdf'])->name('supplier-orders.pdf');
-
-    Route::get('/faturas-fornecedor', [SupplierInvoiceController::class, 'index'])->name('supplier-invoices.index');
-    Route::get('/faturas-fornecedor/criar', [SupplierInvoiceController::class, 'create'])->name('supplier-invoices.create');
-    Route::get('/faturas-fornecedor/{supplierInvoice}', [SupplierInvoiceController::class, 'show'])->name('supplier-invoices.show');
-    Route::post('/faturas-fornecedor', [SupplierInvoiceController::class, 'store'])->name('supplier-invoices.store');
-    Route::delete('/faturas-fornecedor/{supplierInvoice}', [SupplierInvoiceController::class, 'destroy'])->name('supplier-invoices.destroy');
-    Route::get('/faturas-fornecedor/{supplierInvoice}/download/{type}', [SupplierInvoiceController::class, 'downloadFile'])->name('supplier-invoices.download');
-    Route::patch('/faturas-fornecedor/{supplierInvoice}/status', [SupplierInvoiceController::class, 'updateStatus'])->name('supplier-invoices.updateStatus');
-    Route::post('/faturas-fornecedor/{supplierInvoice}/comprovativo', [SupplierInvoiceController::class, 'uploadPaymentProof'])->name('supplier-invoices.uploadProof');
+    Route::prefix('faturas-fornecedor')->name('supplier-invoices.')->group(function () {
+        Route::get('/', [SupplierInvoiceController::class, 'index'])->middleware('permission:supplier-invoices.view')->name('index');
+        Route::get('/criar', [SupplierInvoiceController::class, 'create'])->middleware('permission:supplier-invoices.create')->name('create');
+        Route::post('/', [SupplierInvoiceController::class, 'store'])->middleware('permission:supplier-invoices.create')->name('store');
+        Route::get('/{supplierInvoice}', [SupplierInvoiceController::class, 'show'])->middleware('permission:supplier-invoices.view')->name('show');
+        Route::patch('/{supplierInvoice}/status', [SupplierInvoiceController::class, 'updateStatus'])->middleware('permission:supplier-invoices.edit')->name('updateStatus');
+        Route::get('/{supplierInvoice}/download/{type}', [SupplierInvoiceController::class, 'downloadFile'])->middleware('permission:supplier-invoices.payment')->name('download');
+        Route::post('/{supplierInvoice}/comprovativo', [SupplierInvoiceController::class, 'uploadPaymentProof'])->middleware('permission:supplier-invoices.payment')->name('uploadProof');
+        Route::delete('/{supplierInvoice}', [SupplierInvoiceController::class, 'destroy'])->middleware('permission:supplier-invoices.delete')->name('destroy');
+    });
 });

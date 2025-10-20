@@ -83,8 +83,8 @@
                                     <TableCell>{{ user.email }}</TableCell>
                                     <TableCell>{{ user.mobile || '-' }}</TableCell>
                                     <TableCell>
-                                        <Badge :variant="user.role === 'admin' ? 'default' : 'secondary'">
-                                            {{ user.role }}
+                                        <Badge variant="secondary">
+                                            {{ user.role_name }}
                                         </Badge>
                                     </TableCell>
                                     <TableCell>
@@ -172,8 +172,8 @@
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-slate-500">Role:</span>
-                                    <Badge :variant="user.role === 'admin' ? 'default' : 'secondary'">
-                                        {{ user.role }}
+                                    <Badge variant="secondary">
+                                        {{ user.role_name }}
                                     </Badge>
                                 </div>
                                 <div class="flex justify-between items-center">

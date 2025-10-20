@@ -24,24 +24,26 @@
     import * as z from 'zod'
     import { useForm as useVeeForm } from 'vee-validate'
 
+    const props = defineProps({
+        roles: Array
+    })
+
     const formSchema = toTypedSchema(z.object({
         name: z.string().min(2, 'Nome deve ter no mínimo 2 caracteres').max(255),
         email: z.string().email('Email inválido'),
         mobile: z.string().optional(),
         password: z.string().min(8, 'Password deve ter no mínimo 8 caracteres'),
         password_confirmation: z.string().min(8, 'Confirmação de password deve ter no mínimo 8 caracteres'),
-        role: z.enum(['admin', 'user']),
+        role_id: z.string().min(1, 'Deve selecionar um grupo de permissões'),
         status: z.enum(['active', 'inactive'])
     }).refine((data) => data.password === data.password_confirmation, {
         message: "As passwords não coincidem",
         path: ["password_confirmation"],
     }))
 
-
     const form = useVeeForm({
         validationSchema: formSchema,
         initialValues: {
-            role: 'user',
             status: 'active',
         },
     })
@@ -52,7 +54,7 @@
         mobile: '',
         password: '',
         password_confirmation: '',
-        role: 'user',
+        role_id: '',
         status: 'active'
     })
 
@@ -143,19 +145,24 @@
                         </FormField>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <FormField v-slot="{ componentField }" name="role">
+                            <FormField v-slot="{ componentField }" name="role_id">
                                 <FormItem>
-                                    <FormLabel>Role *</FormLabel>
+                                    <FormLabel>Grupo de Permissões *</FormLabel>
                                     <Select v-bind="componentField">
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Selecione o role" />
+                                                <SelectValue placeholder="Selecione o grupo" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectItem value="user">User</SelectItem>
-                                                <SelectItem value="admin">Admin</SelectItem>
+                                                <SelectItem
+                                                    v-for="role in roles"
+                                                    :key="role.id"
+                                                    :value="role.id.toString()"
+                                                >
+                                                    {{ role.name }}
+                                                </SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>

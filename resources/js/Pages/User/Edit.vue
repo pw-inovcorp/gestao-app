@@ -25,7 +25,9 @@
     import { useForm as useVeeForm } from 'vee-validate'
 
     const props = defineProps({
-        user: Object
+        user: Object,
+        roles: Array,
+        canEditRole: Boolean
     })
 
     const formSchema = toTypedSchema(z.object({
@@ -34,7 +36,7 @@
         mobile: z.string().optional(),
         password: z.string().min(8, 'Password deve ter no mínimo 8 caracteres').optional().or(z.literal('')),
         password_confirmation: z.string().min(8, 'Confirmação de password deve ter no mínimo 8 caracteres').optional().or(z.literal('')),
-        role: z.enum(['admin', 'user']),
+        role_id: z.string().optional(),
         status: z.enum(['active', 'inactive']),
     }).refine((data) => data.password === data.password_confirmation, {
         message: "As passwords não coincidem",
@@ -49,7 +51,7 @@
             mobile: props.user.mobile || '',
             password: '',
             password_confirmation: '',
-            role: props.user.role,
+            role_id: props.user.role_id?.toString() || '',
             status: props.user.status,
         },
     })
@@ -60,7 +62,7 @@
         mobile: props.user.mobile || '',
         password: '',
         password_confirmation: '',
-        role: props.user.role,
+        role_id: props.user.role_id || '',
         status: props.user.status
     })
 
@@ -78,7 +80,7 @@
                     <h1 class="text-3xl font-bold">Editar Utilizador</h1>
                     <p class="text-slate-600 mt-1">Atualizar dados do utilizador</p>
                 </div>
-                <Link v-if="user?.role === 'admin'" href="/utilizadores">
+                <Link href="/utilizadores">
                     <Button variant="outline">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -138,7 +140,7 @@
 
                         <FormField v-slot="{ componentField }" name="password_confirmation">
                             <FormItem>
-                                <FormLabel>Confirmar Password *</FormLabel>
+                                <FormLabel>Confirmar Password</FormLabel>
                                 <FormControl>
                                     <Input type="password" placeholder="••••••••" v-bind="componentField" />
                                 </FormControl>
@@ -146,20 +148,25 @@
                             </FormItem>
                         </FormField>
 
-                        <div v-if="user?.role === 'admin'" class="grid grid-cols-2 gap-4">
-                            <FormField v-slot="{ componentField }" name="role">
+                        <div v-if="canEditRole" class="grid grid-cols-2 gap-4">
+                            <FormField v-slot="{ componentField }" name="role_id">
                                 <FormItem>
-                                    <FormLabel>Role *</FormLabel>
+                                    <FormLabel>Grupo de Permissões *</FormLabel>
                                     <Select v-bind="componentField">
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Selecione o role" />
+                                                <SelectValue placeholder="Selecione o grupo" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
                                             <SelectGroup>
-                                                <SelectItem value="user">User</SelectItem>
-                                                <SelectItem value="admin">Admin</SelectItem>
+                                                <SelectItem
+                                                    v-for="role in roles"
+                                                    :key="role.id"
+                                                    :value="role.id.toString()"
+                                                >
+                                                    {{ role.name }}
+                                                </SelectItem>
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
@@ -183,6 +190,29 @@
                                             </SelectGroup>
                                         </SelectContent>
                                     </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            </FormField>
+                        </div>
+
+                        <div v-else>
+                            <FormField v-slot="{ componentField }" name="status">
+                                <FormItem>
+                                    <FormLabel>Status *</FormLabel>
+                                    <Select v-bind="componentField" disabled>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Selecione o status" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem value="active">Ativo</SelectItem>
+                                                <SelectItem value="inactive">Inativo</SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <FormDescription>Apenas administradores podem alterar o status</FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             </FormField>

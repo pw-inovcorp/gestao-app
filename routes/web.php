@@ -5,6 +5,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EntityController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProposalController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SupplierInvoiceController;
 use App\Http\Controllers\SupplierOrderController;
 use Illuminate\Support\Facades\Route;
@@ -132,5 +133,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/{supplierInvoice}/download/{type}', [SupplierInvoiceController::class, 'downloadFile'])->middleware('permission:supplier-invoices.payment')->name('download');
         Route::post('/{supplierInvoice}/comprovativo', [SupplierInvoiceController::class, 'uploadPaymentProof'])->middleware('permission:supplier-invoices.payment')->name('uploadProof');
         Route::delete('/{supplierInvoice}', [SupplierInvoiceController::class, 'destroy'])->middleware('permission:supplier-invoices.delete')->name('destroy');
+    });
+
+    Route::middleware('role:Super Admin')->prefix('permissoes')->name('roles.')->group(function () {
+        Route::get('/', [RoleController::class, 'index'])->name('index');
+        Route::get('/criar', [RoleController::class, 'create'])->name('create');
+        Route::get('/{role}', [RoleController::class, 'show'])->name('show');
+        Route::post('/', [RoleController::class, 'store'])->name('store');
+        Route::get('/{role}/editar', [RoleController::class, 'edit'])->name('edit');
+        Route::patch('/{role}', [RoleController::class, 'update'])->name('update');
     });
 });

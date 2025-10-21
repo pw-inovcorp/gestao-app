@@ -146,7 +146,12 @@ Route::middleware('auth')->group(function () {
 
     });
 
-    Route::middleware('role:Super Admin')->prefix('logs')->name('logs.')->group(function () {
-        Route::get('/', [LogController::class, 'index'])->name('index');
+    Route::get('/logs', [LogController::class, 'index'])->middleware('role:Super Admin|Admin')->name('logs.index');
+
+    Route::middleware('role:Super Admin')->prefix('configuracoes')->name('config.')->group(function () {
+
+        Route::get('/empresa', [\App\Http\Controllers\CompanySettingController::class, 'edit'])->name('edit');
+
     });
+
 });

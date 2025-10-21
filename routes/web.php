@@ -3,6 +3,7 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EntityController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\RoleController;
@@ -142,5 +143,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [RoleController::class, 'store'])->name('store');
         Route::get('/{role}/editar', [RoleController::class, 'edit'])->name('edit');
         Route::patch('/{role}', [RoleController::class, 'update'])->name('update');
+
+    });
+
+    Route::middleware('role:Super Admin')->prefix('logs')->name('logs.')->group(function () {
+        Route::get('/', [LogController::class, 'index'])->name('index');
     });
 });

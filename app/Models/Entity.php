@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasCustomActivityLog;
 
 class Entity extends Model
 {
     /** @use HasFactory<\Database\Factories\EntityFactory> */
-    use HasFactory;
+    use HasFactory, HasCustomActivityLog;
+
+    protected static $logAttributes = ['nome', 'nif', 'email', 'is_cliente', 'is_fornecedor', 'estado'];
 
     protected $fillable = [
         'numero',

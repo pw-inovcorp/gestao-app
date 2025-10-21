@@ -5,11 +5,15 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasCustomActivityLog;
 
 class Proposal extends Model
 {
     /** @use HasFactory<\Database\Factories\ProposalFactory> */
-    use HasFactory;
+    use HasFactory, HasCustomActivityLog;
+
+    protected static $logAttributes = ['cliente_id', 'validade', 'valor_total', 'estado'];
+
 
     protected $fillable = [
         'numero',

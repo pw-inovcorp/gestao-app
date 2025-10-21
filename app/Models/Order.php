@@ -5,11 +5,14 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasCustomActivityLog;
 
 class Order extends Model
 {
     /** @use HasFactory<\Database\Factories\OrderFactory> */
-    use HasFactory;
+    use HasFactory, HasCustomActivityLog;
+
+    protected static $logAttributes = ['cliente_id', 'valor_total', 'estado', 'proposal_id'];
 
     protected $fillable = [
         'numero',

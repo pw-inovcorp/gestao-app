@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasCustomActivityLog;
 
 class SupplierInvoice extends Model
 {
     //
+    use HasCustomActivityLog;
+
+    protected static $logAttributes = ['fornecedor_id', 'valor_total', 'estado', 'data_pagamento'];
+
+
     protected $fillable = [
         'numero',
         'data_fatura',

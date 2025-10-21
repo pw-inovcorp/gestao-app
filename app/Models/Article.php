@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasCustomActivityLog;
 
 class Article extends Model
 {
     /** @use HasFactory<\Database\Factories\ArticleFactory> */
-    use HasFactory;
+    use HasFactory, HasCustomActivityLog;
 
+    protected $logAttributes = ['nome', 'descricao', 'preco', 'iva_rate_id', 'estado'];
 
     protected $fillable = [
         'referencia',

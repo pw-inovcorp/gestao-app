@@ -4,10 +4,14 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasCustomActivityLog;
 
 class SupplierOrder extends Model
 {
     //
+    use HasCustomActivityLog;
+
+    protected static $logAttributes = ['fornecedor_id', 'order_id', 'valor_total', 'estado'];
 
     protected $fillable = [
         'numero',

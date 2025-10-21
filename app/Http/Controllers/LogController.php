@@ -26,7 +26,7 @@ class LogController extends Controller
                 'hora' => $log->created_at->format('H:i:s'),
                 'utilizador' => $log->causer ? $log->causer->name : 'Sistema',
                 'menu' => $this->getMenuName($log->subject_type),
-                'accao' => $this->getActionName($log->description),
+                'accao' => $this->getFullActionDescription($log),
                 'dispositivo' => $this->getDevice($log->properties),
                 'ip' => $log->properties['ip'] ?? '-',
             ];
@@ -63,6 +63,39 @@ class LogController extends Controller
     }
 
 
+    private function getFullActionDescription($log)
+    {
+        $action = $this->getActionName($log->description);
+        $itemName = $this->getSubjectName($log->subject);
+
+        if ($itemName) {
+            return $action . ' ' . $itemName;
+        }
+
+        return $action;
+    }
+
+
+    private function getSubjectName($subject)
+    {
+        if (!$subject) return null;
+
+        if (isset($subject->nome)) {
+            return '"' . $subject->nome . '"';
+        }
+
+        if (isset($subject->name)) {
+            return '"' . $subject->name . '"';
+        }
+
+        if (isset($subject->id)) {
+            return '#' . $subject->id;
+        }
+
+        return null;
+    }
+
+
     private function getActionName($description)
     {
 
@@ -80,9 +113,9 @@ class LogController extends Controller
         $description = trim($description);
 
 
-        if ($description === 'created') return 'Criado';
-        if ($description === 'updated') return 'Atualizado';
-        if ($description === 'deleted') return 'Eliminado';
+        if ($description === 'created') return 'Criou';
+        if ($description === 'updated') return 'Atualizou';
+        if ($description === 'deleted') return 'Eliminou';
 
         return ucfirst($description);
     }

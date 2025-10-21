@@ -12,7 +12,7 @@ class Order extends Model
     /** @use HasFactory<\Database\Factories\OrderFactory> */
     use HasFactory, HasCustomActivityLog;
 
-    protected static $logAttributes = ['cliente_id', 'valor_total', 'estado', 'proposal_id'];
+    protected $logAttributes = ['numero', 'cliente_id', 'valor_total', 'estado', 'proposal_id'];
 
     protected $fillable = [
         'numero',

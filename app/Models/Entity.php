@@ -11,7 +11,7 @@ class Entity extends Model
     /** @use HasFactory<\Database\Factories\EntityFactory> */
     use HasFactory, HasCustomActivityLog;
 
-    protected static $logAttributes = ['nome', 'nif', 'email', 'is_cliente', 'is_fornecedor', 'estado'];
+    protected $logAttributes = ['nome', 'nif', 'email', 'is_cliente', 'is_fornecedor', 'estado'];
 
     protected $fillable = [
         'numero',

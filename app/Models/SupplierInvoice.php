@@ -10,7 +10,7 @@ class SupplierInvoice extends Model
     //
     use HasCustomActivityLog;
 
-    protected static $logAttributes = ['fornecedor_id', 'valor_total', 'estado', 'data_pagamento'];
+    protected $logAttributes = ['numero', 'fornecedor_id', 'valor_total', 'estado', 'data_pagamento'];
 
 
     protected $fillable = [

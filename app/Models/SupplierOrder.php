@@ -11,7 +11,7 @@ class SupplierOrder extends Model
     //
     use HasCustomActivityLog;
 
-    protected static $logAttributes = ['fornecedor_id', 'order_id', 'valor_total', 'estado'];
+    protected $logAttributes = ['numero', 'fornecedor_id', 'order_id', 'valor_total', 'estado'];
 
     protected $fillable = [
         'numero',

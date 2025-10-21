@@ -11,7 +11,7 @@ class Contact extends Model
     /** @use HasFactory<\Database\Factories\ContactFactory> */
     use HasFactory, HasCustomActivityLog;
 
-    protected static $logAttributes = ['nome', 'apelido', 'email', 'telemovel', 'estado'];
+    protected $logAttributes = ['nome', 'apelido', 'email', 'telemovel', 'estado'];
 
     protected $fillable = [
         'numero',

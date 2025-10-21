@@ -12,7 +12,7 @@ class Proposal extends Model
     /** @use HasFactory<\Database\Factories\ProposalFactory> */
     use HasFactory, HasCustomActivityLog;
 
-    protected static $logAttributes = ['cliente_id', 'validade', 'valor_total', 'estado'];
+    protected $logAttributes = ['numero', 'cliente_id', 'validade', 'valor_total', 'estado'];
 
 
     protected $fillable = [

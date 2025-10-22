@@ -1,6 +1,7 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3'
 import { computed } from 'vue'
+import AppLogo from '@/components/AppLogo.vue'
 
 const props = defineProps({
     open: Boolean
@@ -68,7 +69,7 @@ const menuItems = computed(() => {
             name:'Financeiro',
             route:'/faturas-fornecedor',
             icon:"M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z",
-            permission: "admin"
+            permission: "supplier-invoices.view"
         },
 
         {
@@ -104,7 +105,7 @@ const menuItems = computed(() => {
     ]">
         <div class="h-16 flex items-center justify-between px-6 border-b border-slate-800">
             <Link href="/home" class="text-xl font-bold text-white hover:text-blue-400">
-                Gestão-App
+                <AppLogo variant="sidebar"/>
             </Link>
             <button @click="emit('close')" class="lg:hidden text-slate-400 hover:text-white">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

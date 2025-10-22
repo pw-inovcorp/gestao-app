@@ -148,9 +148,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/logs', [LogController::class, 'index'])->middleware('role:Super Admin|Admin')->name('logs.index');
 
-    Route::middleware('role:Super Admin')->prefix('configuracoes')->name('config.')->group(function () {
+    Route::middleware('role:Super Admin|Admin|Visualizador')->prefix('configuracoes')->name('company.')->group(function () {
 
         Route::get('/empresa', [\App\Http\Controllers\CompanySettingController::class, 'edit'])->name('edit');
+        Route::patch('/empresa', [\App\Http\Controllers\CompanySettingController::class, 'update'])->middleware('role:Super Admin')->name('update');
 
     });
 

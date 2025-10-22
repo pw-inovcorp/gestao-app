@@ -5,6 +5,7 @@
     import { Input } from '@/components/ui/input'
     import { Label } from '@/components/ui/label'
     import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+    import AppLogo from '@/components/AppLogo.vue'
 
     const form = useForm({
         name: '',
@@ -24,11 +25,7 @@
     <GuestLayout>
         <Card class="w-full max-w-md">
             <CardHeader class="text-center space-y-2">
-                <div class="flex justify-center mb-2">
-                    <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center">
-                        <span class="text-2xl text-white font-bold">G</span>
-                    </div>
-                </div>
+                <AppLogo variant="auth"/>
                 <CardTitle class="text-2xl font-bold">Gestão-App</CardTitle>
                 <CardDescription>Entre na sua conta</CardDescription>
             </CardHeader>

@@ -31,4 +31,17 @@ class CompanySetting extends Model
             'logo' => null,
         ]);
     }
+
+    public function hasLogo(): bool
+    {
+        return !empty($this->logo) && \Storage::disk('public')->exists($this->logo);
+    }
+
+    public function getLogoPath(): ?string
+    {
+        if ($this->hasLogo()) {
+            return '/storage/' . $this->logo;
+        }
+        return null;
+    }
 }

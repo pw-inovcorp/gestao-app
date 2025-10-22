@@ -48,6 +48,10 @@ class HandleInertiaRequests extends Middleware
                     'status' => $request->user()->status,
                 ] : null,
             ],
+            'company' => [
+                'logo' => \App\Models\CompanySetting::getSettings()->getLogoPath(),
+                'name' => \App\Models\CompanySetting::getSettings()->nome,
+            ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),

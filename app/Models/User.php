@@ -52,8 +52,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function isActive(): bool
+    public function scopeAtivo($query)
     {
-        return $this->status === 'active';
+        return $query->where('status', 'active');
     }
 }

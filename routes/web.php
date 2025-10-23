@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CalendarEventController;
+use App\Http\Controllers\CalendarSettingsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EntityController;
 use App\Http\Controllers\LogController;
@@ -153,6 +155,40 @@ Route::middleware('auth')->group(function () {
         Route::get('/empresa', [\App\Http\Controllers\CompanySettingController::class, 'edit'])->name('edit');
         Route::patch('/empresa', [\App\Http\Controllers\CompanySettingController::class, 'update'])->middleware('role:Super Admin')->name('update');
 
+    });
+
+
+    Route::prefix('calendario')->name('calendar.')->group(function () {
+
+        Route::get('/', [CalendarEventController::class, 'index'])->middleware('permission:calendars.view')->name('index');
+
+        // API para eventos (FullCalendar)
+        Route::get('/eventos', [CalendarEventController::class, 'getEvents'])->name('events');
+
+
+        Route::post('/', [CalendarEventController::class, 'store'])->middleware('permission:calendars.create')->name('store');
+        Route::get('/{calendarEvent}', [CalendarEventController::class, 'show'])->name('show');
+        Route::patch('/{calendarEvent}', [CalendarEventController::class, 'update'])->middleware('permission:calendars.edit')->name('update');
+        Route::delete('/{calendarEvent}', [CalendarEventController::class, 'destroy'])->middleware('permission:calendars.delete')->name('destroy');
+    });
+
+
+    Route::middleware('role:Super Admin|Admin')->prefix('configuracoes/calendario')->name('calendar.settings.')->group(function () {
+
+        Route::get('/tipos', [CalendarSettingsController::class, 'indexTypes'])->name('types.index');
+        Route::get('/tipos/criar', [CalendarSettingsController::class, 'createType'])->name('types.create');
+        Route::post('/tipos', [CalendarSettingsController::class, 'storeType'])->name('types.store');
+        Route::get('/tipos/{type}/editar', [CalendarSettingsController::class, 'editType'])->name('types.edit');
+        Route::patch('/tipos/{type}', [CalendarSettingsController::class, 'updateType'])->name('types.update');
+        Route::delete('/tipos/{type}', [CalendarSettingsController::class, 'destroyType'])->name('types.destroy');
+
+
+        Route::get('/accoes', [CalendarSettingsController::class, 'indexActions'])->name('actions.index');
+        Route::get('/accoes/criar', [CalendarSettingsController::class, 'createAction'])->name('actions.create');
+        Route::post('/accoes', [CalendarSettingsController::class, 'storeAction'])->name('actions.store');
+        Route::get('/accoes/{action}/editar', [CalendarSettingsController::class, 'editAction'])->name('actions.edit');
+        Route::patch('/accoes/{action}', [CalendarSettingsController::class, 'updateAction'])->name('actions.update');
+        Route::delete('/accoes/{action}', [CalendarSettingsController::class, 'destroyAction'])->name('actions.destroy');
     });
 
 });

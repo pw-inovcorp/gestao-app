@@ -17,4 +17,9 @@ class CalendarAction extends Model
     {
         return $this->hasMany(CalendarEvent::class);
     }
+
+    public function scopeAtivo($query)
+    {
+        return $query->where('estado', 'ativo');
+    }
 }

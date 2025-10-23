@@ -66,9 +66,9 @@ class Entity extends Model
         return $this->is_fornecedor;
     }
 
-    public function isAtivo(): bool
+    public function scopeAtivo($query)
     {
-        return $this->estado === 'ativo';
+        return $query->where('estado', 'ativo');
     }
 
 

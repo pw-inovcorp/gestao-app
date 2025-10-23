@@ -50,4 +50,24 @@ class CalendarEvent extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function scopeAtivo($query)
+    {
+        return $query->where('estado', 'ativo');
+    }
+
+    public function scopeByUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    public function scopeByEntity($query, $entityId)
+    {
+        return $query->where('entity_id', $entityId);
+    }
+
+    public function scopeBetweenDates($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('data', [$startDate, $endDate]);
+    }
+
 }

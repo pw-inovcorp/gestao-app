@@ -182,10 +182,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('/tipos/{type}', [CalendarSettingsController::class, 'destroyType'])->name('types.destroy');
 
 
-        Route::get('/accoes', [CalendarSettingsController::class, 'indexActions'])->name('actions.index');
-        Route::post('/accoes', [CalendarSettingsController::class, 'storeAction'])->name('actions.store');
-        Route::patch('/accoes/{action}', [CalendarSettingsController::class, 'updateAction'])->name('actions.update');
-        Route::delete('/accoes/{action}', [CalendarSettingsController::class, 'destroyAction'])->name('actions.destroy');
+        Route::get('/acoes', [CalendarSettingsController::class, 'indexActions'])->name('actions.index');
+        Route::post('/acoes', [CalendarSettingsController::class, 'storeAction'])->name('actions.store');
+        Route::patch('/acoes/{action}', [CalendarSettingsController::class, 'updateAction'])->name('actions.update');
+        Route::delete('/acoes/{action}', [CalendarSettingsController::class, 'destroyAction'])->name('actions.destroy');
     });
 
 });

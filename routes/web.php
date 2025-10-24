@@ -164,12 +164,16 @@ Route::middleware('auth')->group(function () {
 
         // API para eventos (FullCalendar)
         Route::get('/eventos', [CalendarEventController::class, 'getEvents'])->name('events');
-
+        Route::get('/eventos-semana', [CalendarEventController::class, 'getWeeklyEvents'])->name('weeklyEvents');
 
         Route::post('/', [CalendarEventController::class, 'store'])->middleware('permission:calendars.create')->name('store');
         Route::get('/{calendarEvent}', [CalendarEventController::class, 'show'])->name('show');
         Route::patch('/{calendarEvent}', [CalendarEventController::class, 'update'])->middleware('permission:calendars.edit')->name('update');
         Route::delete('/{calendarEvent}', [CalendarEventController::class, 'destroy'])->middleware('permission:calendars.delete')->name('destroy');
+
+
+
+
     });
 
 

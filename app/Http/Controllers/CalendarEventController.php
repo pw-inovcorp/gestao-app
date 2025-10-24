@@ -7,6 +7,7 @@ use App\Models\CalendarEvent;
 use App\Models\CalendarType;
 use App\Models\Entity;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -202,5 +203,62 @@ class CalendarEventController extends Controller
         $calendarEvent->delete();
 
         return back()->with('success', 'Evento eliminado com sucesso');
+    }
+
+    public function getWeeklyEvents()
+    {
+        $userId = auth()->id();
+        $today = now();
+        $startOfWeek = $today->copy()->startOfWeek(Carbon::SUNDAY);
+
+        $weeks = [];
+
+        for ($week = 0; $week < 2; $week++) {
+            $days = [];
+
+            for ($i = 0; $i < 7; $i++) {
+                $date = $startOfWeek->copy()->addDays(($week * 7) + $i);
+
+                $dayEvents = CalendarEvent::with(['calendarType', 'calendarAction', 'entity'])
+                    ->where('user_id', $userId)
+                    ->whereDate('data', $date)
+                    ->ativo()
+                    ->orderBy('hora')
+                    ->get()
+                    ->map(function($e) {
+                        return [
+                            'id' => $e->id,
+                            'titulo' => $e->titulo,
+                            'hora' => substr($e->hora, 0, 5),
+                            'duracao' => $e->duracao,
+                            'cor' => $e->calendarType->cor ?? '#3b82f6',
+                            'tipo' => $e->calendarType->nome ?? null,
+                            'accao' => $e->calendarAction->nome ?? null,
+                            'entidade' => $e->entity->nome ?? null,
+                            'descricao' => $e->descricao,
+                            'conhecimento' => $e->conhecimento,
+                            'dataFormatada' => $e->data->locale('pt')->isoFormat('dddd, D [de] MMMM [de] YYYY'),
+                        ];
+                    });
+
+                $dayNames = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+
+                $days[] = [
+                    'date' => $date->format('Y-m-d'),
+                    'dayName' => $dayNames[$date->dayOfWeek],
+                    'dayNumber' => $date->day,
+                    'isToday' => $date->isSameDay($today),
+                    'events' => $dayEvents,
+                ];
+            }
+
+            $weeks[] = [
+                'days' => $days
+            ];
+        }
+
+        return response()->json([
+            'weeks' => $weeks
+        ]);
     }
 }

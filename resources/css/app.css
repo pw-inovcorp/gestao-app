@@ -88,4 +88,6 @@
     @apply text-sm font-medium text-slate-500;
 }
 
-
+body:has(dialog[open]) {
+    overflow: hidden;
+}

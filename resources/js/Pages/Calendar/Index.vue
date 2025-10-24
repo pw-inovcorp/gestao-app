@@ -108,7 +108,7 @@ function handleSaved() {
             <h1 class="text-2xl font-bold mb-4">Calendário</h1>
 
             <div class="bg-white p-4 rounded-lg border mb-4">
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-sm font-medium mb-2">Utilizador</label>
                         <Select v-model="filterUser" @update:model-value="applyFilters">
@@ -163,7 +163,6 @@ function handleSaved() {
                 </AlertDescription>
             </Alert>
 
-            <!-- Calendário -->
             <div class="bg-white p-4 rounded-lg border">
                 <FullCalendar ref="calendar" :options="calendarOptions" />
             </div>
@@ -189,4 +188,16 @@ function handleSaved() {
     </AppLayout>
 </template>
 
+<style scoped>
+@media (max-width: 768px) {
+    :deep(.fc .fc-toolbar-chunk:first-child),
+    :deep(.fc .fc-toolbar-chunk:last-child) {
+        display: none;
+    }
 
+    :deep(.fc .fc-toolbar-chunk:nth-child(2)) {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>

@@ -99,7 +99,7 @@ const deleteEvent = () => {
 
 <template>
     <Dialog :open="show" @update:open="(val) => !val && $emit('close')">
-        <DialogContent class="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent class="w-[calc(100vw-2rem)] sm:max-w-2xl max-h-[90vh] overflow-y-auto" >
             <DialogHeader>
                 <DialogTitle>
                     {{ event?.id ? 'Evento #' + event.id : 'Novo Evento' }}
@@ -230,7 +230,7 @@ const deleteEvent = () => {
                         id="partilha"
                         v-model="form.partilha"
                         multiple
-                        class="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        class="min-h-[100px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2"
                     >
                         <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }}</option>
                     </select>

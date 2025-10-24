@@ -62,7 +62,6 @@
                             id="password"
                             v-model="form.password"
                             type="password"
-                            placeholder="••••••••"
                             required
                             autocomplete="current-password"
                         />

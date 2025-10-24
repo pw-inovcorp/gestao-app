@@ -15,7 +15,7 @@ class CalendarEventController extends Controller
 {
     public function index()
     {
-        $entities = Entity::where('estado', 'ativo')
+        $entities = Entity::ativo()
             ->orderBy('nome')
             ->get(['id', 'nome']);
 
@@ -27,7 +27,7 @@ class CalendarEventController extends Controller
             ->orderBy('nome')
             ->get(['id', 'nome']);
 
-        $users = User::where('status', 'active')
+        $users = User::ativo()
             ->where('id', '!=', auth()->id())
             ->orderBy('name')
             ->get(['id', 'name']);
@@ -157,7 +157,7 @@ class CalendarEventController extends Controller
 
         CalendarEvent::create($validated);
 
-        return back()->with('success', 'Evento criado com sucesso!');
+        return back()->with('success', 'Evento criado com sucesso');
     }
 
     public function update(Request $request, CalendarEvent $calendarEvent)
@@ -190,7 +190,7 @@ class CalendarEventController extends Controller
 
         $calendarEvent->update($validated);
 
-        return back()->with('success', 'Evento atualizado com sucesso!');
+        return back()->with('success', 'Evento atualizado com sucesso');
     }
 
     public function destroy(CalendarEvent $calendarEvent)
@@ -201,6 +201,6 @@ class CalendarEventController extends Controller
 
         $calendarEvent->delete();
 
-        return back()->with('success', 'Evento eliminado com sucesso!');
+        return back()->with('success', 'Evento eliminado com sucesso');
     }
 }

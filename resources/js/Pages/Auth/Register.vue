@@ -68,7 +68,6 @@
                             id="password"
                             v-model="form.password"
                             type="password"
-                            placeholder="••••••••"
                             required
                         />
                         <p v-if="form.errors.password" class="text-sm text-red-600">
@@ -83,7 +82,7 @@
                             id="password_confirmation"
                             v-model="form.password_confirmation"
                             type="password"
-                            placeholder="••••••••"
+                            placeholder="tem que ser igual ao password"
                             required
                         />
                     </div>

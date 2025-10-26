@@ -28,9 +28,7 @@ Route::middleware('guest')->group(function () {
         return Inertia::render('Auth/Login');
     })->name('login');
 
-    Route::get('/register', function () {
-        return Inertia::render('Auth/Register');
-    })->name('register');
+
 
     Route::get('/forgot-password', function () {
         return Inertia::render('Auth/ForgotPassword');
@@ -190,6 +188,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/acoes', [CalendarSettingsController::class, 'storeAction'])->name('actions.store');
         Route::patch('/acoes/{action}', [CalendarSettingsController::class, 'updateAction'])->name('actions.update');
         Route::delete('/acoes/{action}', [CalendarSettingsController::class, 'destroyAction'])->name('actions.destroy');
+    });
+
+    Route::middleware('role:Super Admin|Admin')->prefix('configuracoes/iva')->name('iva.')->group(function () {
+        Route::get('/', [App\Http\Controllers\IvaRateController::class, 'index'])->name('index');
+        Route::post('/', [App\Http\Controllers\IvaRateController::class, 'store'])->name('store');
+        Route::patch('/{ivaRate}', [App\Http\Controllers\IvaRateController::class, 'update'])->name('update');
+        Route::delete('/{ivaRate}', [App\Http\Controllers\IvaRateController::class, 'destroy'])->name('destroy');
     });
 
 });

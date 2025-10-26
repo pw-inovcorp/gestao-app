@@ -84,24 +84,24 @@
                     </Button>
                 </form>
 
-                <!-- Divider -->
-                <div class="relative my-6">
-                    <div class="absolute inset-0 flex items-center">
-                        <span class="w-full border-t" />
-                    </div>
-                    <div class="relative flex justify-center text-xs uppercase">
-                        <span class="bg-background px-2 text-gray-500">
-                            Não tem conta?
-                        </span>
-                    </div>
-                </div>
+<!--                &lt;!&ndash; Divider &ndash;&gt;-->
+<!--                <div class="relative my-6">-->
+<!--                    <div class="absolute inset-0 flex items-center">-->
+<!--                        <span class="w-full border-t" />-->
+<!--                    </div>-->
+<!--                    <div class="relative flex justify-center text-xs uppercase">-->
+<!--                        <span class="bg-background px-2 text-gray-500">-->
+<!--                            Não tem conta?-->
+<!--                        </span>-->
+<!--                    </div>-->
+<!--                </div>-->
 
-                <!-- Register Link -->
-                <Link href="/register">
-                    <Button variant="outline" class="w-full">
-                        Criar nova conta
-                    </Button>
-                </Link>
+<!--                &lt;!&ndash; Register Link &ndash;&gt;-->
+<!--                <Link href="/register">-->
+<!--                    <Button variant="outline" class="w-full">-->
+<!--                        Criar nova conta-->
+<!--                    </Button>-->
+<!--                </Link>-->
             </CardContent>
         </Card>
     </GuestLayout>

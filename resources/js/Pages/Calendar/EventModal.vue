@@ -237,7 +237,6 @@ const deleteEvent = () => {
                     <p class="text-xs text-muted-foreground mt-1">Ctrl+clique para múltiplos</p>
                 </div>
 
-                <!-- Botões -->
                 <div class="flex justify-between pt-4">
                     <Button
                         v-if="event?.id && isOwner"

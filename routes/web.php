@@ -197,4 +197,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{ivaRate}', [App\Http\Controllers\IvaRateController::class, 'destroy'])->name('destroy');
     });
 
+    Route::get('/api/search', [App\Http\Controllers\SearchController::class, 'search'])->name('search');
+
 });

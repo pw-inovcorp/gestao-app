@@ -49,7 +49,11 @@ class CalendarEventController extends Controller
             ->ativo();
 
         if ($request->has('user_id') && $request->user_id) {
-            $query->where('user_id', $request->user_id);
+            $filteredUserId = $request->user_id;
+            $query->where(function($q) use ($filteredUserId) {
+                $q->where('user_id', $filteredUserId)
+                    ->orWhereJsonContains('partilha', (int)$filteredUserId);
+            });
         } else {
             $query->where(function($q) use ($currentUserId) {
                 $q->where('user_id', $currentUserId)
@@ -220,15 +224,19 @@ class CalendarEventController extends Controller
                 $date = $startOfWeek->copy()->addDays(($week * 7) + $i);
 
                 $dayEvents = CalendarEvent::with(['calendarType', 'calendarAction', 'entity'])
-                    ->where('user_id', $userId)
+                    ->where(function($q) use ($userId) {
+                        $q->where('user_id', $userId)
+                            ->orWhereJsonContains('partilha', $userId);
+                    })
                     ->whereDate('data', $date)
                     ->ativo()
                     ->orderBy('hora')
                     ->get()
-                    ->map(function($e) {
+                    ->map(function($e) use ($userId) {
+                        $isOwner = $e->user_id === $userId;
                         return [
                             'id' => $e->id,
-                            'titulo' => $e->titulo,
+                            'titulo' => $e->titulo . ($isOwner ? '' : ' (Partilhado)'),
                             'hora' => substr($e->hora, 0, 5),
                             'duracao' => $e->duracao,
                             'cor' => $e->calendarType->cor ?? '#3b82f6',

@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { Input } from '@/components/ui/input'
 import { useDebounceFn } from '@vueuse/core'
+import { vOnClickOutside } from '@vueuse/components'
 
 const query = ref('')
 const results = ref([])
@@ -54,7 +55,7 @@ const goTo = (url) => {
             </button>
         </div>
 
-        <div v-if="open" v-click-away="() => open = false" class="absolute top-full mt-2 w-full bg-white rounded-lg shadow-lg border max-h-96 overflow-y-auto z-50">
+        <div v-if="open" v-on-click-outside="() => open = false" class="absolute top-full mt-2 w-full bg-white rounded-lg shadow-lg border max-h-96 overflow-y-auto z-50">
             <div v-if="results.length === 0 && query.length >= 2" class="p-4 text-center text-sm text-slate-500">Nenhum resultado encontrado</div>
 
             <div v-else class="py-2">
